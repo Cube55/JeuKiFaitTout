@@ -280,6 +280,15 @@
             position: absolute;
         }
 
+        .current-score-div {
+            left: 5px;
+            padding: 15px;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            position: absolute;
+        }
+
         .table-container {
             height: 80%;
             /* On utilise flex ou on laisse en block, selon vos besoins */
@@ -761,6 +770,13 @@
         </div>
 
         <div class="timer-container">
+            <div class="current-score-div">
+                <button class='minus-score-player' onclick="addCurrentScore(-1)">-</button>
+                <span id="currentScoreToAdd"></span>
+                <button class='add-score-player' onclick="addCurrentScore(1)">+</button>
+            </div>
+
+
             <div class="timer" id="timer">10</div>
             <button type="button" class="reset-timer-button" id="reset-timer-button1">⟳</button>
         </div>
@@ -821,7 +837,7 @@
         </div>
         </br>
         <button type="button" class="add-difficulty-mode-button-off" id="difficulty-mode-button">Mode difficile :
-            Off</button>
+            Off</button>&nbsp;<button type="button" class="add-difficulty-mode-button-on" id="sound-mode-button">🔊</button>
         </br>
         <div id="divMsg"></div>
         </br>
@@ -946,6 +962,7 @@
         let desactivateSwipte = false;
         let currentCardObject;
         let isFront = true;
+        let soundModeOn = true;
         //console.log(cards);
         let remainingCards = [...cards];
         const iconList = getIconsType();
@@ -987,6 +1004,7 @@
         const reInitButton = document.getElementById('reset-timer-button');
         const reloadButton = document.getElementById('reload-button');
         const difficultyMode = document.getElementById('difficulty-mode-button');
+        const soundModeButton = document.getElementById('sound-mode-button');
 
         const setSpecialInput = document.getElementById('set-special-input');
         const setSpecialPmInput = document.getElementById('set-specialPm-input');
@@ -1004,6 +1022,7 @@
         const lstCardType = document.getElementById('lstCardType');
         const lstTemplateType = document.getElementById('lstTemplateType');
         const flipButton = document.getElementById('flip-button');
+        const currentScoreToAdd = document.getElementById('currentScoreToAdd');
         function removeHtmlTags(str) {
             return str.replace(/<[^>]*>/g, '');
         }
@@ -1025,8 +1044,18 @@
             displayNextCard();
             renderPlayersList();
 
+
         }
 
+        function addCurrentScore(nb) {
+            currentPointAdded+=nb;
+            refreshCurrentScore();
+        }
+
+
+        function refreshCurrentScore() {
+            currentScoreToAdd.innerHTML=currentPointAdded;
+        }
         function initAllNextcounter() {
             specialType.forEach(element => {
                 element.counter = 0;
@@ -1047,6 +1076,7 @@
             //console.log(specialType);
             const filteredspecialTypeActive = specialType.filter(p => p.active && p.nbCardCounter != -1);
             currentPointAdded = 1;
+            refreshCurrentScore();
             //console.log(filteredspecialTypeActive);
             if (filteredspecialTypeActive.length > 0) {
 
@@ -1333,6 +1363,7 @@
             adjustFontSize();
             desactivateSwipte = false;
             currentPointAdded = nb;
+            refreshCurrentScore();
         }
 
         function replaceRange(text) {
@@ -1505,8 +1536,8 @@
 
             let witdthPercentValue = 1;
             let heightPercentValue = 1;
-            let widthForceCheckValue = 37;
-            let heightForceCheckValue = 35;
+            let widthForceCheckValue = 37;//37
+            let heightForceCheckValue = 35;//35
             if (witdthPercent)
                 witdthPercentValue = witdthPercent;
             if (heightPercent)
@@ -1539,16 +1570,28 @@
                 const cardHeight = cardElement.clientHeight;
 
                 // Réduire progressivement la taille jusqu'à ce que le texte rentre
+
+                let prevscrollWidth = cardText.scrollWidth + widthForceCheckValue;
+
                 while (
                     ((cardText.scrollWidth + widthForceCheckValue) > (cardWidth * witdthPercentValue) || (cardText.scrollHeight + heightForceCheckValue) > (cardHeight * heightPercentValue)) &&
                     fontSize > 12 // taille minimale pour la lisibilité
                 ) {
                     fontSize -= 1;
-                    console.log((cardText.scrollWidth) + " > " + (cardWidth * witdthPercentValue))
+                    console.log((cardText.scrollWidth+widthForceCheckValue) + " >-- " + (cardWidth * witdthPercentValue))
+                    console.log((cardText.scrollHeight + heightForceCheckValue)+ " ---> " +(cardHeight * heightPercentValue))
                     console.log(fontSize)
                     cardText.style.fontSize = `${fontSize}px`;
+                    if((cardText.scrollHeight + heightForceCheckValue) <= (cardHeight * heightPercentValue)
+                        && prevscrollWidth == cardText.scrollWidth + widthForceCheckValue)
+                        break;
+
+                    prevscrollWidth = cardText.scrollWidth + widthForceCheckValue;
 
                 }
+
+                
+
             }
         }
 
@@ -1723,10 +1766,11 @@
 
                     currCard.style.background = "#dc5656";
 
-
-                    const audio = new Audio("alarm.wav"); // Remplace par le chemin de ton fichier
-                    audio.play();
-
+                    if(soundModeOn)
+                    {
+                        const audio = new Audio("alarm.wav"); // Remplace par le chemin de ton fichier
+                        audio.play();
+                    }
 
                 }
             }, 1000);
@@ -1948,6 +1992,21 @@
             }
 
         });
+        soundModeButton.addEventListener('click', () => {
+            soundModeOn = !soundModeOn;
+            //console.log(difficultyModeOn);
+            if (soundModeOn) {
+                soundModeButton.innerHTML = "🔊";
+                soundModeButton.classList.remove('add-difficulty-mode-button-off');
+                soundModeButton.classList.add('add-difficulty-mode-button-on');
+            }
+            else {
+                soundModeButton.innerHTML = "🔇";
+                soundModeButton.classList.remove('add-difficulty-mode-button-on');
+                soundModeButton.classList.add('add-difficulty-mode-button-off');
+            }
+
+        });
         changePlayerButton.addEventListener('click', () => {
 
             currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
@@ -2083,11 +2142,11 @@
                     ${filteredspecialType[0].typeName}	
                     </div>
                                 
-                    <input type="text" class="add-player-input" id="set-specificTimer-input" style="width:100px;" placeholder="Timer" value="${filteredspecialType[0].timer}">
+                    <input type="text" class="add-player-input" id="set-specificTimer-input" style="width:70px;" placeholder="Timer" value="${filteredspecialType[0].timer}">
                     <button type="button" class="add-player-button" id="set-specificTimer-button" onclick='specificTimer(${filteredspecialType[0].id})'>Set</button>			
                     </br>
-                    <input type="text" class="add-special-input" id="set-init-input" placeholder="compteur apparition" style="width:100px;" value="${filteredspecialType[0].nbCardCounter}">
-                    <input type="text" class="add-special-input" id="set-init-inputRnd" placeholder="+/-" style="width:100px;" value="${filteredspecialType[0].nbCardCounterRnd}">
+                    <input type="text" class="add-special-input" id="set-init-input" placeholder="compteur apparition" style="width:70px;" value="${filteredspecialType[0].nbCardCounter}">
+                    <input type="text" class="add-special-input" id="set-init-inputRnd" placeholder="+/-" style="width:70px;" value="${filteredspecialType[0].nbCardCounterRnd}">
                     <button type="button" id="set-init-button" class="add-player-button"  style="width:100px;" onclick="InitValueCardCounter(${filteredspecialType[0].id})">Init.</button>
                     `;
 
@@ -2157,6 +2216,7 @@
                     frontText.style.display = 'flex';
             }
             isFront = !isFront;
+            console.log("----------");
             adjustFontSize();
         });
 

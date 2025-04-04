@@ -1,9 +1,2185 @@
-<div onclick="test()"><h1>hello guys</h1></div>
-<div id='rrr'>--</div>
-<script>
-const tabScr = ["aa","bb","cc","ee"];
-  function test()
-    {
-      document.getElementById('rrr').innerHTML = tabScr[Math.floor(Math.random() * tabScr.length)]
-    }
-</script>
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu ki fait tout</title>
+    <link rel="manifest" href="./manifest.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 100%;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .header {
+            height: 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .player-info {
+            font-size: 24px;
+            font-weight: bold;
+            flex-grow: 1;
+        }
+
+        .menu-button {
+            width: 50px;
+            height: 50px;
+            background-color: #1F77B4;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .timer-container {
+            height: 5%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8f8f8;
+        }
+
+        .timer {
+            font-size: 36px;
+            font-weight: bold;
+            color: #1F77B4;
+        }
+
+        .card-container {
+            height: 85%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            padding-bottom: 100px;
+            /* Ajuster selon la hauteur de vos boutons */
+        }
+
+        .table-ttdtc {
+            width: 100%;
+            height: 100%;
+            border: "solid black 1px";
+        }
+
+        .card {
+            position: absolute;
+            width: 90%;
+            max-width: 600px;
+            height: 80%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            transition: transform 0.2s ease;
+            padding: 20px;
+            user-select: none;
+            touch-action: none;
+            margin: 0 auto;
+            transform-style: preserve-3d;
+        }
+
+        .card-content,
+        .card-content-back {
+
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            /* On utilise flex pour répartir la hauteur facilement */
+            flex-direction: column;
+            /* Le contenu s’empile verticalement */
+            backface-visibility: hidden;
+        }
+
+        .card-content-back {
+            position: absolute;
+            transform: rotateY(180deg);
+        }
+
+        .flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-text {
+            color: #333;
+            font-size: 24px;
+            padding: 20px;
+            word-wrap: break-word;
+            list-style: inside;
+            /*width: 100%;
+            height: 100%;*/
+            display: flex;
+            /* Pour permettre de gérer la hauteur des sections internes */
+            flex-direction: column;
+        }
+
+        .front {
+            width: 100%;
+            height: 100%;
+        }
+
+        /*     
+        .card.flipped .card-content {
+            transform: rotateY(180deg);
+            height:100%;
+        }
+
+        .card .back {
+            transform: rotateY(180deg);
+            height:100%;
+        }*/
+        .players-panel {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 400px;
+            height: 100%;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+            transition: right 0.3s ease;
+            padding: 20px;
+            z-index: 20;
+            overflow-y: auto;
+        }
+
+        .players-panel.open {
+            right: 0;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .panel-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .close-panel {
+            font-size: 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .players-list {
+            list-style: none;
+        }
+
+        .player-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 20px;
+        }
+
+        .player-item.active {
+            background-color: #f8f8f8;
+            font-weight: bold;
+            color: #1F77B4;
+        }
+
+        .player-score {
+            font-weight: bold;
+        }
+
+        .delete-player,
+        .add-score-player,
+        .minus-score-player {
+            color: #FF7F0E;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        .add-player-form {
+            display: flex;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .add-player-input {
+            flex-grow: 1;
+            padding: 15px;
+            font-size: 18px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .add-special-input {
+            flex-grow: 1;
+            padding: 15px;
+            font-size: 18px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .add-player-button {
+            padding: 15px;
+            background-color: #1F77B4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .reset-timer-button {
+            right: 20px;
+            padding: 15px;
+            background-color: #1F77B4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            position: absolute;
+        }
+
+        .table-container {
+            height: 80%;
+            /* On utilise flex ou on laisse en block, selon vos besoins */
+            display: block;
+            /* ou flex, mais block suffit si on veut simplement que le tableau prenne 100% */
+        }
+
+        /* --- Tableau plein, boutons qui remplissent la cellule --- */
+        .table-container table {
+            width: 100%;
+            height: 100%;
+            /*border: 2px solid black;*/
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        .table-container td {
+            width: 33.3%;
+            /* 3 colonnes, si vous voulez forcer */
+            /* Chaque cellule prend la hauteur disponible dans le tableau */
+            height: 25%;
+            /* 4 lignes = 100 / 4 = 25% */
+            /*border: 1px solid #000;*/
+            padding: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        /* --- Div qui remplace le bouton --- */
+        .ttdtc-button {
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            background-color: #1F77B4;
+            border-radius: 30%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 0 auto;
+            color: white;
+            font-weight: bold;
+        }
+
+
+
+        /* --- Effet hover --- */
+        .ttdtc-button:hover {
+            background-color: #1b669b;
+        }
+
+
+        .add-player-button:hover {
+            background-color: #1b669b;
+        }
+
+        .reset-timer-button:hover {
+            background-color: #1b669b;
+        }
+
+        .add-difficulty-mode-button-on,
+        .add-difficulty-mode-button-off {
+            padding: 15px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .add-difficulty-mode-button-on {
+            background-color: #1F77B4;
+        }
+
+        .add-difficulty-mode-button-off {
+            background-color: #abb2b8;
+        }
+
+        .add-difficulty-mode-button-on:hover {
+            background-color: #1b669b;
+        }
+
+        .add-difficulty-mode-button-off:hover {
+            background-color: #8e9499;
+        }
+
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s;
+            z-index: 15;
+        }
+
+        .overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .action-buttons {
+            position: absolute;
+            bottom: 30px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .action-button {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .dislike {
+            background-color: #fd5068;
+        }
+
+        .like {
+            background-color: #26de81;
+        }
+
+        .responseFont {
+            color: #3b3c44;
+            text-decoration: underline dotted;
+        }
+
+        .instructionFont {
+            color: #424247;
+            text-decoration: underline;
+        }
+
+        .flip-button {
+            background-color: #4a90e2;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            /* Adapter à la taille du parent */
+            height: 100%;
+            /* Adapter à la taille du parent */
+        }
+
+        .title {
+            height: 20%;
+            /* Texte en haut prenant 20% de la hauteur */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .container {
+            display: grid;
+            /*grid-template-columns: repeat(2, 1fr);  Deux colonnes */
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 15px;
+            /* Espacement entre les boutons */
+            width: 300px;
+            /* Ajusté pour contenir les boutons */
+            margin: auto;
+            height: 80%;
+            /* Boutons occupant 80% de l'écran */
+            align-items: center;
+            /* Centrer les boutons verticalement */
+        }
+
+        @media (max-width: 768px) {
+            .card-text {
+                font-size: 20px;
+            }
+
+            .player-info {
+                font-size: 20px;
+            }
+
+            .timer {
+                font-size: 28px;
+            }
+
+            .action-button {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+
+            .title {
+                font-size: 20px;
+                /* Réduction de la taille du titre */
+            }
+
+        }
+
+        @media (max-width: 480px) {
+            .card-text {
+                font-size: 18px;
+            }
+
+            .player-info {
+                font-size: 18px;
+            }
+
+            .timer {
+                font-size: 24px;
+            }
+
+            .action-button {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            .title {
+                font-size: 18px;
+            }
+
+        }
+
+        .swipe-left {
+            transform: translateX(-150%) rotate(-30deg);
+            transition: transform 0.5s ease;
+        }
+
+        .swipe-right {
+            transform: translateX(150%) rotate(30deg);
+            transition: transform 0.5s ease;
+        }
+
+        .no-cards {
+            font-size: 24px;
+            text-align: center;
+            color: #666;
+        }
+
+        .timer-expired {
+            color: red;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        #divMsg {
+            font-size: 20px;
+            opacity: 1;
+            transition: opacity 2s ease-out;
+        }
+
+        .checkbox-wrapper-2 .ikxBAC {
+            appearance: none;
+            background-color: #dfe1e4;
+            border-radius: 72px;
+            border-style: none;
+            flex-shrink: 0;
+            height: 20px;
+            margin: 0;
+            position: relative;
+            width: 30px;
+        }
+
+        .checkbox-wrapper-2 .ikxBAC::before {
+            bottom: -6px;
+            content: "";
+            left: -6px;
+            position: absolute;
+            right: -6px;
+            top: -6px;
+        }
+
+        .checkbox-wrapper-2 .ikxBAC,
+        .checkbox-wrapper-2 .ikxBAC::after {
+            transition: all 100ms ease-out;
+        }
+
+        .checkbox-wrapper-2 .ikxBAC::after {
+            background-color: #fff;
+            border-radius: 50%;
+            content: "";
+            height: 14px;
+            left: 3px;
+            position: absolute;
+            top: 3px;
+            width: 14px;
+        }
+
+        .checkbox-wrapper-2 input[type=checkbox] {
+            cursor: default;
+        }
+
+        .checkbox-wrapper-2 .ikxBAC:hover {
+            background-color: #c9cbcd;
+            transition-duration: 0s;
+        }
+
+        .checkbox-wrapper-2 .ikxBAC:checked {
+            background-color: #6e79d6;
+        }
+
+        .checkbox-wrapper-2 .ikxBAC:checked::after {
+            background-color: #fff;
+            left: 13px;
+        }
+
+        .checkbox-wrapper-2 :focus:not(.focus-visible) {
+            outline: 0;
+        }
+
+        .checkbox-wrapper-2 .ikxBAC:checked:hover {
+            background-color: #535db3;
+        }
+
+        .accordion {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        /* Style de l'accordéon */
+        .accordion-title {
+
+            background-color: #1F77B4;
+            /* Même couleur que le bouton */
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            border: none;
+            transition: background 0.3s;
+        }
+
+        .accordion-title:hover {
+            background-color: #1b669b;
+        }
+
+        .accordion-content {
+            padding: 15px;
+            display: none;
+            /* Caché par défaut */
+            border-top: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            /* Fond clair pour bien séparer le contenu */
+        }
+
+        /* Style pour le <select> */
+        .add-player-select {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: white;
+            cursor: pointer;
+            appearance: none;
+            /* Supprime l'apparence par défaut */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        .add-player-select:focus {
+            border-color: #1F77B4;
+            outline: none;
+            box-shadow: 0 0 5px rgba(255, 88, 100, 0.5);
+        }
+
+        .eye-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            /* Ajuste la taille de l'icône */
+            cursor: pointer;
+        }
+
+        .eye-icon1 {
+            position: absolute;
+            top: 10px;
+            right: 50px;
+            font-size: 24px;
+            /* Ajuste la taille de l'icône */
+            cursor: pointer;
+        }
+
+        .back-card-circle {
+            width: 20%;
+            height: 50%;
+            border: 5px solid black;
+            /* Création du cercle creux */
+            border-radius: 50%;
+            position: absolute;
+            z-index: 1;
+            /* Placer derrière le texte */
+        }
+
+        .back-card-text {
+
+            /*transform: rotate(-45deg); */
+            top: 50px;
+            white-space: nowrap;
+            z-index: 2;
+            /* Placer le texte au-dessus du cercle */
+        }
+
+        .back-card-container {
+
+            width: 100%;
+            height: auto;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+    <script src="carddata1.js"></script>
+    <script src="carddata2.js"></script>
+    <script src="carddata3.js"></script>
+    <script src="carddata4.js"></script>
+    <script src="carddata5.js"></script>
+    <script src="carddata6.js"></script>
+    <script src="carddata7.js"></script>
+    <script src="carddata8.js"></script>
+    <script src="carddata9.js"></script>
+    <script src="carddata10.js"></script>
+    <script src="carddata11.js"></script>
+    <script src="carddata12.js"></script>
+    <script src="carddata13.js"></script>
+    <script src="carddata14.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <div class="header" id="header">
+            <div class="player-info"><button type="button" class="add-player-button" id="changePlayer-button">⇄</button>
+                <span id="current-player-name">Aucun</span> : <span id="current-player-score">0</span></div>
+            <button class="menu-button" id="menu-button">☰</button>
+        </div>
+
+        <div class="timer-container">
+            <div class="timer" id="timer">10</div>
+            <button type="button" class="reset-timer-button" id="reset-timer-button1">⟳</button>
+        </div>
+
+        <div class="card-container" id="card-container">
+            <!-- Les cartes seront ajoutées ici via JavaScript -->
+        </div>
+
+        <div class="action-buttons">
+            <button class="action-button dislike" id="dislike-button">✗</button>
+            <button class="flip-button" id="flip-button">↺</button>
+            <button class="action-button like" id="like-button">✓</button>
+        </div>
+    </div>
+
+    <div class="players-panel" id="players-panel">
+        <div class="panel-header">
+            <h2 class="panel-title">Joueurs</h2>
+            <button class="close-panel" id="close-panel">×</button>
+        </div>
+
+        <form class="add-player-form" id="add-player-form">
+            <input type="text" class="add-player-input" id="add-player-input" placeholder="Nom du joueur">
+            <button type="submit" class="add-player-button">Ajouter</button>
+        </form>
+
+        <ul class="players-list" id="players-list">
+            <!-- Les joueurs seront ajoutés ici via JavaScript -->
+        </ul>
+
+
+        <form class="add-player-form" id="set-timer-form">
+            <input type="text" class="add-player-input" id="set-timer-input" style="width:100px;" placeholder="Timer">
+            <button type="submit" class="add-player-button">Set</button>
+            <button type="button" class="add-player-button" id="reset-timer-button">Reset</button>
+        </form>
+        <div id="SelctZone">
+            <select id="lstCardType" class="add-player-select" onchange="changeCardType()">
+
+            </select>
+        </div>
+        </br>
+        <div id="CardTypeConfig">
+
+        </div>
+        <div class="accordion">
+            <div class="accordion-title" onclick="toggleAccordion()">Activer type de cartes</div>
+            <div class="accordion-content">
+                <div class="checkbox-wrapper-2" id="SpecialTypeDiv">
+                </div>
+            </div>
+        </div>
+        </br>
+        <div id="SelctZone">
+            <select id="lstTemplateType" class="add-player-select" onchange="changeTemplateType()">
+
+            </select>
+        </div>
+        </br>
+        <button type="button" class="add-difficulty-mode-button-off" id="difficulty-mode-button">Mode difficile :
+            Off</button>
+        </br>
+        <div id="divMsg"></div>
+        </br>
+        </br>
+        <button type="button" class="add-player-button" id="reload-button">Reload card</button>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <script>
+
+
+        const defaultType = [{ id: 1, timer: 30, nbCardCounter: 10, nbCardCounterRnd: 3 },
+        { id: 2, timer: 60, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 3, timer: 60, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 4, timer: 60, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 5, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 6, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 7, timer: 60, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 8, timer: 60, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 9, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 10, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 11, timer: 8, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 12, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 13, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 14, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        ];
+
+
+        const islocal = true;
+
+        const specialType = [{ id: 1, typeName: "Règles", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#AECAF4", icon: "☑️" },
+        { id: 2, typeName: "Mime", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#d5b0c5", icon: "🙆‍♂️" },
+        { id: 3, typeName: "Dilèmme", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#b6f7ec", icon: "🫸🏻" },
+        { id: 4, typeName: "Défis", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#C5B0D5", icon: "🥏" },
+        { id: 5, typeName: "Vérité", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#FFBB78", icon: "🤞🏿" },
+        { id: 6, typeName: "Quizz", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#98DF8A", icon: "💊", icon2: "💡" },
+        { id: 7, typeName: "Action collective", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#d5d4b0", icon: "👨‍👩‍👧‍👦" },
+        { id: 8, typeName: "Roleplay", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#DBDB8D", icon: "🕵️" },
+        { id: 9, typeName: "Classement", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#9EDAE5", icon: "🔢" },
+        { id: 10, typeName: "TTDTC", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#8e95c1", icon: "🌍", icon2: "💡" },
+        { id: 11, typeName: "JuduFion", active: true, timer: 8, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#C49C94", icon: "🔞" },
+        { id: 12, typeName: "Ta Reum", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#BCBD22", icon: "👓", icon2: "💡" },
+        { id: 13, typeName: "Bac", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#82e0aa", icon: "🅱️" },
+        { id: 14, typeName: "Mot dice", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#f9e79f", icon: "🐈‍⬛" },
+        ];
+
+
+        //#region cards
+        let cards = [];
+
+        // loadCard 
+
+        cards = cards.concat(carddata1);
+        cards = cards.concat(carddata2);
+        cards = cards.concat(carddata3);
+        cards = cards.concat(carddata4);
+        cards = cards.concat(carddata5);
+        cards = cards.concat(carddata6);
+        cards = cards.concat(carddata7);
+        cards = cards.concat(carddata4);
+        cards = cards.concat(carddata8);
+        cards = cards.concat(carddata9);
+        cards = cards.concat(carddata10);
+        cards = cards.concat(carddata11);
+        cards = cards.concat(carddata12);
+        cards = cards.concat(carddata13);
+        cards = cards.concat(carddata14);
+
+        //#endregion cards
+        console.log(cards.length);
+
+        function specialTypeHtml() {
+
+            const specialTypeDiv = document.getElementById("SpecialTypeDiv");
+            specialTypeDiv.innerHTML = '';
+            lstCardType.innerHTML += `<option value="0">Config type de cartes</option>`;
+            lstTemplateType.innerHTML += `<option value="0">Template de jeu (aucun)</option>`;
+            (specialType).forEach(element => {
+
+                lstCardType.innerHTML += `<option value="${element.id}">${element.icon} ${element.typeName}</option>`;
+                specialTypeDiv.innerHTML += `
+                    <input type="checkbox" class="sc-gJwTLC ikxBAC" id="speType${element.id}" ${element.active ? "checked" : ""} onclick="activateSpecial(${element.id}, this)"><label for="speType${element.id}"> ${element.typeName} ${element.icon}</label>
+                    </br>
+                `
+                if (element.id != 1)
+                    lstTemplateType.innerHTML += `<option value="${element.id}">${element.icon} ${element.typeName}</option>`;
+
+
+            });
+        }
+
+
+        function loadJSON(name) {
+            return fetch(name + '.json')
+                .then(response => {
+                    if (!response.ok) throw new Error(`Erreur de chargement: ${name}.json`);
+                    return response.json();
+                });
+        }
+        function getIconsType() {
+            let strIcon = "";
+            for (let iko = 0; iko < specialType.length; iko++) {
+                strIcon += specialType[iko].icon;
+            }
+            return strIcon;
+        }
+        if (!islocal) {
+            // Charger les deux JSON et attendre qu'ils soient tous les deux prêts
+            Promise.all([loadJSON('cards')])
+                .then(([cardsData]) => {
+                    cards = cardsData;
+                    console.log("Tous les fichiers JSON ont été chargés !");
+                    console.log("Cards:", cards);
+
+                    // Lancer la suite du programme ici
+                    init();
+                })
+                .catch(error => console.error("Erreur:", error));
+
+        }
+        let desactivateSwipte = false;
+        let currentCardObject;
+        let isFront = true;
+        //console.log(cards);
+        let remainingCards = [...cards];
+        const iconList = getIconsType();
+
+        const defaultCardBack = "<div class='back-card-container'>'<div class='back-card-circle'></div><div class='back-card-text'>Texte en biais</div></div>"
+
+        let players = [
+            { id: 1, name: "Joueur 1", score: 0, bgColor: generateReadableColor() },
+            { id: 2, name: "Joueur 2", score: 0, bgColor: generateReadableColor() }
+        ];
+        let currentPlayerIndex = 0;
+        const defaultTimer = 10;
+        let timerDuration = defaultTimer; // en secondes
+        let timer;
+        let timerValue = timerDuration;
+        let isDragging = false;
+        let startX = 0;
+        let currentX = 0;
+        let currentPointAdded = 1;
+
+        let difficultyModeOn = false;
+        let currCardBgcol = "white";
+        // Éléments DOM
+        const cardContainer = document.getElementById('card-container');
+        const currentPlayerNameElement = document.getElementById('current-player-name');
+        const currentPlayerScoreElement = document.getElementById('current-player-score');
+        const timerElement = document.getElementById('timer');
+        const menuButton = document.getElementById('menu-button');
+        const playersPanel = document.getElementById('players-panel');
+        const closePanel = document.getElementById('close-panel');
+        const overlay = document.getElementById('overlay');
+        const playersList = document.getElementById('players-list');
+        const addPlayerForm = document.getElementById('add-player-form');
+        const addPlayerInput = document.getElementById('add-player-input');
+        const dislikeButton = document.getElementById('dislike-button');
+        const likeButton = document.getElementById('like-button');
+        const setTimerForm = document.getElementById('set-timer-form');
+        const setTimerInput = document.getElementById('set-timer-input');
+        const reInitButton = document.getElementById('reset-timer-button');
+        const reloadButton = document.getElementById('reload-button');
+        const difficultyMode = document.getElementById('difficulty-mode-button');
+
+        const setSpecialInput = document.getElementById('set-special-input');
+        const setSpecialPmInput = document.getElementById('set-specialPm-input');
+        const setSpecialIntButton = document.getElementById('set-special-int-button');
+        const changePlayerButton = document.getElementById('changePlayer-button');
+        const resetTimerButton1 = document.getElementById('reset-timer-button1');
+
+        const setQuizzInput = document.getElementById('set-quizz-input');
+        const setQuizzPmInput = document.getElementById('set-quizzPm-input');
+        const setQuizzIntButton = document.getElementById('set-quizz-int-button');
+
+        const setTamereInput = document.getElementById('set-tamere-input');
+        const setTamerePmInput = document.getElementById('set-tamerePm-input');
+        const setTamereIntButton = document.getElementById('set-tamere-int-button');
+        const lstCardType = document.getElementById('lstCardType');
+        const lstTemplateType = document.getElementById('lstTemplateType');
+        const flipButton = document.getElementById('flip-button');
+        function removeHtmlTags(str) {
+            return str.replace(/<[^>]*>/g, '');
+        }
+
+
+        setTimerInput.value = "";
+
+
+        // Initialisation
+        function init() {
+
+            specialTypeHtml();
+            if (!islocal) {
+                remainingCards = [...cards];
+            }
+
+            updateCurrentPlayer();
+            initAllNextcounter();
+            displayNextCard();
+            renderPlayersList();
+
+        }
+
+        function initAllNextcounter() {
+            specialType.forEach(element => {
+                element.counter = 0;
+                element.nextCardCounter = calculateNextcounter(element);
+            });
+        }
+
+        function calculateNextcounter(element) {
+            // calculer le prochain counter rnd
+            return Math.floor(Math.random() * ((element.nbCardCounter + element.nbCardCounterRnd) - (element.nbCardCounter - element.nbCardCounterRnd) + 1) + (element.nbCardCounter - element.nbCardCounterRnd));
+
+        }
+        function GetCard() {
+            //specialType = [{id:1, typeName:"Règles", active:true,timer:30,nbCardCounter:10,nbCardCounterRnd:3, counter:0},
+
+            //const specialType = [{id:1, typeName:"Règles", active:true,timer:30,nbCardCounter:10,nbCardCounterRnd:3, nextCardCounter:-1 ,counter:0, bgColor:"#ebed86"},
+            const currCardTypeSelected = [];
+            //console.log(specialType);
+            const filteredspecialTypeActive = specialType.filter(p => p.active && p.nbCardCounter != -1);
+            currentPointAdded = 1;
+            //console.log(filteredspecialTypeActive);
+            if (filteredspecialTypeActive.length > 0) {
+
+
+                filteredspecialTypeActive.forEach(element => {
+
+                    element.counter++;
+                    if (element.counter > element.nextCardCounter) {
+                        element.counter = 0;
+                    }
+                    if (element.nextCardCounter == element.counter) {
+                        element.counter = 0;
+                        element.nextCardCounter = calculateNextcounter(element);
+                        currCardTypeSelected.push(element);
+                    }
+                });
+                //console.log(currCardTypeSelected);
+
+                let listTypes;
+                // randomise all selected type
+                if (currCardTypeSelected.length == 0) {
+                    listTypes = specialType.map(card => card.id);
+                }
+                else {
+                    listTypes = currCardTypeSelected.map(card => card.id);
+                }
+                //console.log(listTypes);
+
+                return getRandomCardByTypes(remainingCards, listTypes);
+            }
+            return null;
+
+        }
+
+        function getRandomLetter() {
+            // Poids approximatifs pour chaque lettre
+            // Plus le poids est élevé, plus la lettre a de chances d'être choisie
+            const letterWeights = { A: 8, B: 2, C: 7, D: 4, E: 2, F: 4, G: 2, H: 1, I: 7, J: 2, K: 1, L: 6, M: 6, N: 7, O: 5, P: 7, Q: 1, R: 7, S: 8, T: 6, U: 4, V: 3, W: 1, X: 1, Y: 1, Z: 1 };
+
+            // Calcul du poids total
+            const totalWeight = Object.values(letterWeights).reduce((sum, weight) => sum + weight, 0);
+
+            // Génère un nombre aléatoire entre 0 et totalWeight
+            let random = Math.random() * totalWeight;
+
+            // Sélectionne la lettre en parcourant les poids
+            for (const [letter, weight] of Object.entries(letterWeights)) {
+                if (random < weight) {
+                    return letter;
+                }
+                random -= weight;
+            }
+
+            // Au cas où (normalement jamais atteint)
+            return null;
+        }
+
+
+
+        function getRandomCardByTypes(cards, typesTmp) {
+
+            let types = typesTmp;
+            let activeMotdice = false;
+            //console.log(types);
+            if (types.indexOf(14) > -1 && types.indexOf(12) == -1) // mot dice
+            {
+                types.push(12);
+                activeMotdice = true;
+            }
+
+
+            // Filtrer les indices des cartes correspondant à l'un des types donnés
+            const filteredIndices = cards
+                .map((card, index) => types.includes(card.type) ? index : -1)
+                .filter(index => index !== -1);
+
+            if (filteredIndices.length === 0) {
+                return null; // Aucune carte ne correspond aux types demandés
+            }
+
+            // Sélectionner un index au hasard parmi les cartes filtrées
+            const randomIndex = filteredIndices[Math.floor(Math.random() * filteredIndices.length)];
+
+            // Retirer la carte du tableau et la retourner
+            let card = cards.splice(randomIndex, 1)[0];
+            currentCardObject = card;
+
+
+            let filteredspecialTypeActive = specialType.filter(p => p.id == card.type);
+            //filteredspecialTypeActive[0].counter++;
+            currCardBgcol = filteredspecialTypeActive[0].bgColor;
+
+            //console.log(activeMotdice, card.type);
+
+            if (card.type == 14 || (activeMotdice && card.type == 12)) // mot dice
+            {
+
+                const filteredIndices2 = cards
+                    .map((c, index) =>
+                        ((c.type == 12 && c.subType == 1)
+                            || (c.type == 14))
+                            ? index : -1)
+                    .filter(index => index !== -1);
+
+
+                if (filteredIndices2.length === 0) {
+                    return null; // Aucune carte ne correspond aux types demandés
+                }
+
+                // Sélectionner un index au hasard parmi les cartes filtrées
+
+
+                const nbindice1 = (Math.floor(Math.random() * (4 - 1 + 1)) + 1);
+                const nbindice2 = (Math.floor(Math.random() * (4 - 1 + 1)) + 1);
+
+                let mot1 = card.desc;
+
+                if (activeMotdice && card.type == 12 && card.subType != 1) {
+                    const randomIndex1 = filteredIndices2[Math.floor(Math.random() * filteredIndices2.length)];
+                    const card1 = cards.splice(randomIndex1, 1)[0];
+                    mot1 = card1.desc;
+                }
+                const randomIndex2 = filteredIndices2[Math.floor(Math.random() * filteredIndices2.length)];
+                const card2 = cards.splice(randomIndex2, 1)[0];
+                const mot2 = card2.desc;
+
+
+                card.verso = "<font color='#1a5276'><u>" + mot1 + "</u></font>en " + nbindice1 + " indice" + (nbindice1 > 1 ? "s" : "")
+                    + "</br></br><font color='#1a5276'><u>" + mot2 + "</u></font>en " + nbindice2 + " indice" + (nbindice2 > 1 ? "s" : "")
+                    ;
+                card.desc = "Fait deviner un des mots au verso avec le nombre d'indice indiqué pour chaque mot.<span class='eye-icon1'>🙈</span>";
+                card.type = 14;
+                filteredspecialTypeActive = specialType.filter(p => p.id == card.type);
+                currCardBgcol = filteredspecialTypeActive[0].bgColor;
+
+            }
+            else if (card.type == 3) // dilemme
+            {
+                const tabRndDilemme = ["Répond au dilemme.", "Défend la première partie du dilemme.", "Défend la deuxième partie du dilemme.",
+                    "Choisi une partie du dilemme et défend la.", "[playerCurr] doit défendre la première partie et [playerX] doit défendre la segonde partie du dilemme.",
+                    "[playerX] doit défendre la première partie et [playerCurr] doit défendre la segonde partie du dilemme."
+                ]
+                let valueInstruct = tabRndDilemme[Math.floor(Math.random() * tabRndDilemme.length)];
+                const playerName = getPlayerName();
+
+                valueInstruct = valueInstruct.replace("[playerCurr]", playerName[0]);
+                valueInstruct = valueInstruct.replace("[playerX]", playerName[1]);
+
+                card.desc += "</br><font class='instructionFont'>" + tabRndDilemme[Math.floor(Math.random() * tabRndDilemme.length)] + "</font>";
+
+
+            }
+            else if (card.type == 13) // Bac
+            {
+                const currLetter = getRandomLetter();
+                card.desc = "<font color='#3d3666'>" + card.desc + "</font> commençant par la lettre <font color='#932b2b'>" + currLetter + "</font>";
+
+            }
+            else if (card.type == 12) // ta reum
+            {
+                console.log("rrrr");
+                let subType = 1; // char
+                if (card.subType == 1)
+                    subType = 2;
+
+                const filteredIndices2 = cards
+                    .map((card, index) => card.type == 12 && card.subType == subType ? index : -1)
+                    .filter(index => index !== -1);
+
+                if (filteredIndices2.length === 0) {
+                    return null; // Aucune carte ne correspond aux types demandés
+                }
+
+                // Sélectionner un index au hasard parmi les cartes filtrées
+                const randomIndex2 = filteredIndices2[Math.floor(Math.random() * filteredIndices2.length)];
+                let card2 = cards.splice(randomIndex2, 1)[0];
+
+
+
+                card = { desc: "Devine les personnage / situation au verso</br><span class='eye-icon1'>🙈</span>", verso: "<font color='#3d3a72'>" + card.desc + "</font> <font color='#900C3F'>" + card2.desc + "</font>", type: 12 };
+                currentCardObject = card;
+            }
+            else if (card.type == 10) //ttdtc
+            {
+
+                card = {
+                    desc: `
+
+                        <div style="width:100%;height:100%;" id="divTtdtc">
+                            <div class="title" id="titleVal" style="height:20%">
+                            ${card.theme}
+                            </div>
+                            <div  class="table-container">
+                                <table>                                    
+                                    <tr>
+                                    <td><div class="ttdtc-button" onclick="displayTtdtcCard(1)">1</div></td>
+                                    <td><div class="ttdtc-button" onclick="displayTtdtcCard(2)">2</div></td>
+                                    <td><div class="ttdtc-button" onclick="displayTtdtcCard(3)">3</div></td>
+                                    </tr> 
+                                    <tr>
+                                    <td><div class="ttdtc-button" onclick="displayTtdtcCard(4)">4</div></td>
+                                    <td><div class="ttdtc-button" onclick="displayTtdtcCard(5)">5</div></td>
+                                    <td><div class="ttdtc-button" onclick="displayTtdtcCard(6)">6</div></td>
+                                    </tr> 
+                                    <tr>
+                                    <td><div class="ttdtc-button" onclick="displayTtdtcCard(7)">7</div></td>
+                                    <td><div class="ttdtc-button" onclick="displayTtdtcCard(8)">8</div></td>
+                                    <td><div class="ttdtc-button" onclick="displayTtdtcCard(9)">9</div></td>
+                                    </tr> 
+                                    <tr>
+                                    <td>&nbsp;</td>
+                                    <td><div class="ttdtc-button" onclick="displayTtdtcCard(10)">10</div></td>
+                                    <td>&nbsp;</td>
+                                    </tr>  
+                                </table>
+
+                        </div>
+
+
+                        </div>
+                        `
+                    , verso: "", type: 10
+                };
+                desactivateSwipte = true;
+
+            }
+
+            card.desc += "<span class='eye-icon'>" + filteredspecialTypeActive[0].icon + "</span>";
+
+            if (card.verso) {
+                if (filteredspecialTypeActive[0].icon2)
+                    card.verso += "<span class='eye-icon1'>" + filteredspecialTypeActive[0].icon2 + "</span>";
+
+                card.verso += "<span class='eye-icon'>" + filteredspecialTypeActive[0].icon + "</span>";
+            }
+
+            return card;
+        }
+
+        function getPlayerName() {
+            let j1 = "Joueur 1";
+            let j2 = "Joueur 2";
+            if (players.length > 0) {
+
+                const currPlayer = players[currentPlayerIndex];
+                const playersX = players.filter(p => p.id != currPlayer.id);
+
+                if (currPlayer != undefined)
+                    j1 = currPlayer.name;
+
+                if (playersX != undefined && playersX.length > 0)
+                    j2 = playersX[Math.floor(Math.random() * playersX.length)].name;
+
+            }
+            return [j1, j2];
+        }
+        function displayTtdtcCard(nb) {
+            //console.log(currentCardObject);
+
+            const filteredspecialTypeActive = specialType.filter(p => p.id == currentCardObject.type);
+            startTimer();
+            const cardElement = document.getElementById('current-card');
+            cardElement.style.backgroundColor = currCardBgcol;
+
+
+            const filteredcurrentCardObject = currentCardObject.questions.filter(p => p.lvl == nb);
+            const questFinded = filteredcurrentCardObject[Math.floor(Math.random() * filteredcurrentCardObject.length)];
+
+            const currCardDiv = document.getElementById('FrontTextId');
+
+            const currCardBackDiv = document.getElementById('BackTextId');
+            currCardDiv.innerHTML = questFinded.question + "<span class='eye-icon'>" + filteredspecialTypeActive[0].icon + "</span>"
+            currCardBackDiv.innerHTML = "<font class='responseFont'>" + questFinded.reponse + "</font>";
+
+            if (filteredspecialTypeActive[0].icon2)
+                currCardBackDiv.innerHTML += "<span class='eye-icon1'>" + filteredspecialTypeActive[0].icon2 + "</span>";
+
+            currCardBackDiv.innerHTML += "<span class='eye-icon'>" + filteredspecialTypeActive[0].icon + "</span>";
+
+
+            flipButton.style.visibility = "visible";
+
+
+            adjustFontSize();
+            desactivateSwipte = false;
+            currentPointAdded = nb;
+        }
+
+        function replaceRange(text) {
+
+
+            let players = [
+                { id: 1, name: "Joueur 1", score: 0 },
+                { id: 2, name: "Joueur 2", score: 0 }
+            ];
+            players[currentPlayerIndex].name;
+
+
+
+            let valRet = text;
+
+            if (difficultyModeOn) {
+                valRet = valRet.replace(/\[(\d+)-(\d+)\]/g, (match, min, max) => {
+                    return max; // Prend toujours la valeur maximale
+                });
+            }
+            else {
+                valRet = valRet.replace(/\[(\d+)-(\d+)\]/g, (match, min, max) => {
+                    min = parseInt(min, 10);
+                    max = parseInt(max, 10);
+                    if (min > max) return match; // Sécurité si min > max
+                    return Math.floor(Math.random() * (max - min + 1)) + min;
+                });
+            }
+
+            const playerName = getPlayerName();
+
+            valRet = valRet.replace(/\[playerX\]/g, () => {
+                return playerName[1];
+            })
+
+            valRet = valRet.replace(/\[playerCurr\]/g, () => {
+                return playerName[0];
+            });
+
+            return valRet;
+        }
+
+        // Afficher la carte suivante
+        function displayNextCard() {
+            isFront = true;
+            desactivateSwipte = false;
+            flipButton.style.visibility = "visible";
+
+
+            if (remainingCards.length === 0) {
+                cardContainer.innerHTML = '<div class="no-cards">Toutes les cartes ont été utilisées !</div>';
+                currentCardObject = undefined;
+                return;
+            }
+            let card = GetCard();
+
+            if (card == null || card == undefined) {
+                cardContainer.innerHTML = '<div class="no-cards">Toutes les cartes ont été utilisées !</div>';
+                currentCardObject = undefined;
+                return;
+            }
+
+
+
+
+
+            const cardElement = document.createElement('div');
+            cardElement.className = 'card';
+            cardElement.id = 'current-card';
+            cardElement.style.backgroundColor = currCardBgcol;
+
+
+            const cardContent = document.createElement('div');
+            cardContent.className = 'card-content';
+
+            // Recto de la carte
+            const frontText = document.createElement('div');
+            frontText.className = 'card-text front';
+            frontText.innerHTML = replaceRange(card.desc);
+            frontText.id = "FrontTextId";
+
+            cardContent.appendChild(frontText);
+            cardElement.appendChild(cardContent);
+
+
+            const cardContentBack = document.createElement('div');
+            cardContentBack.className = 'card-content-back';
+
+
+            // Verso de la carte
+            const backText = document.createElement('div');
+            backText.id = "BackTextId";
+            backText.className = 'card-text back';
+            if (card.verso) {
+                backText.innerHTML = card.verso;
+            }
+            else {
+                backText.innerHTML = "";             //defaultCardBack   
+                flipButton.style.visibility = "hidden";
+            }
+
+
+            //backText.style.display = 'none'; // Caché par défaut
+
+            // Ajouter les éléments au DOM
+
+            cardContentBack.appendChild(backText);
+            cardElement.appendChild(cardContentBack);
+
+
+
+
+
+            // Créer l'élément de texte à l'intérieur
+            /*
+            const cardContent = document.createElement('div');
+            cardContent.className = 'card-content';
+            const cardText = document.createElement('div');
+            cardText.className = 'card-text';
+            cardText.textContent = card.desc;
+
+            // Ajouter les éléments au DOM
+            cardContent.appendChild(cardText);
+            cardElement.appendChild(cardContent);*/
+
+
+            document.body.appendChild(cardElement); // Ajoutez l'élément au DOM pour pouvoir le mesurer
+
+            // Fonction pour ajuster la taille de police
+
+            // Appeler la fonction après que le DOM soit complètement chargé
+            if (card.type == 10) {
+                setTimeout(adjustFontSize, 0, "titleVal", 1, 0.2, 0);
+                // Réajuster si la fenêtre est redimensionnée
+                window.addEventListener('resize', adjustFontSize, "titleVal", 1, 0.2, 0);
+                setTimeout(adjustFontSize, 0);
+                window.addEventListener('resize', adjustFontSize);
+            }
+            else {
+                setTimeout(adjustFontSize, 0);
+                // Réajuster si la fenêtre est redimensionnée
+                window.addEventListener('resize', adjustFontSize);
+            }
+
+            /*
+            const cardElement = document.createElement('div');
+            cardElement.className = 'card';
+            cardElement.id = 'current-card';
+            
+            // Calculer la taille de police en fonction de la longueur du texte
+            const fontSize = Math.max(24, Math.min(52, 500 / Math.sqrt(card.desc.length)));
+            console.log(fontSize);
+            cardElement.innerHTML = `
+                <div class="card-content">
+                    <div class="card-text" style="font-size: ${fontSize}px">${card.desc}</div>
+                </div>
+            `;
+        	
+            */
+
+
+            cardContainer.appendChild(cardElement);
+            attachCardEvents(cardElement);
+            startTimer();
+        }
+
+
+
+        function adjustFontSize(forcedivId, witdthPercent, heightPercent, heightForceCheck) {
+
+            let witdthPercentValue = 1;
+            let heightPercentValue = 1;
+            let widthForceCheckValue = 37;
+            let heightForceCheckValue = 35;
+            if (witdthPercent)
+                witdthPercentValue = witdthPercent;
+            if (heightPercent)
+                heightPercentValue = heightPercent;
+            if (heightForceCheck != undefined)
+                heightForceCheckValue = heightForceCheck;
+            // Verso de la carte
+            let id = "FrontTextId";
+            if (!isFront) {
+                id = "BackTextId";
+            }
+            if (forcedivId)
+                id = forcedivId;
+
+            const cardText = document.getElementById(id);
+            const cardElement = document.getElementById("current-card");
+
+            if (cardText) {
+                // Empêcher les coupures de mots
+                cardText.style.wordBreak = "keep-all";
+                cardText.style.overflowWrap = "normal";
+
+                // Commencer avec une grande taille de police
+                let fontSize = 60;
+                cardText.style.fontSize = `${fontSize}px`;
+                cardText.style.fontWeight = 'bold';
+
+                // Récupérer les dimensions du conteneur
+                const cardWidth = cardElement.clientWidth;
+                const cardHeight = cardElement.clientHeight;
+
+                // Réduire progressivement la taille jusqu'à ce que le texte rentre
+                while (
+                    ((cardText.scrollWidth + widthForceCheckValue) > (cardWidth * witdthPercentValue) || (cardText.scrollHeight + heightForceCheckValue) > (cardHeight * heightPercentValue)) &&
+                    fontSize > 12 // taille minimale pour la lisibilité
+                ) {
+                    fontSize -= 1;
+                    console.log((cardText.scrollWidth) + " > " + (cardWidth * witdthPercentValue))
+                    console.log(fontSize)
+                    cardText.style.fontSize = `${fontSize}px`;
+
+                }
+            }
+        }
+
+
+        // Attacher les événements de swipe à la carte
+        function attachCardEvents(cardElement) {
+            cardElement.addEventListener('mousedown', startDrag);
+            cardElement.addEventListener('touchstart', handleTouchStart, { passive: true });
+
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+
+
+
+        }
+
+        function handleTouchStart(e) {
+            if (desactivateSwipte) return;
+
+            const touch = e.touches[0];
+            startDrag({ clientX: touch.clientX });
+
+
+        }
+
+        function handleTouchMove(e) {
+            if (desactivateSwipte) return;
+
+            if (!isDragging) return;
+            const touch = e.touches[0];
+            drag({ clientX: touch.clientX });
+            e.preventDefault();
+        }
+
+        function startDrag(e) {
+            if (desactivateSwipte) return;
+
+            isDragging = true;
+            startX = e.clientX;
+            const card = document.getElementById('current-card');
+            card.style.transition = 'none';
+        }
+        const deltaVal = 100;
+        function drag(e) {
+            if (desactivateSwipte) return;
+            if (!isDragging) return;
+
+            const card = document.getElementById('current-card');
+            currentX = e.clientX;
+            const deltaX = currentX - startX;
+
+            card.style.transform = `translateX(${deltaX}px) rotate(${deltaX * 0.05}deg)`;
+
+            // Changer l'opacité pour indiquer l'action
+
+            if (deltaX > deltaVal) {
+                card.style.backgroundColor = 'rgba(38, 222, 129, 0.2)';
+            } else if (deltaX < -deltaVal) {
+                card.style.backgroundColor = 'rgba(253, 80, 104, 0.2)';
+            } else {
+                card.style.backgroundColor = currCardBgcol;
+            }
+        }
+
+        function endDrag() {
+            if (desactivateSwipte) return;
+            if (!isDragging) return;
+            isDragging = false;
+
+            const card = document.getElementById('current-card');
+
+            if (!isFront) {
+                //card.classList.remove("flipped");
+                //console.log(card)
+                //card.classList.add('flipped');
+                //console.log(card)
+            }
+
+            const deltaX = currentX - startX;
+
+            //console.log(deltaX+" ----  "+deltaVal);
+            if (deltaX > deltaVal) {
+                swipeRight();
+            } else if (deltaX < -deltaVal) {
+                swipeLeft();
+            } else {
+                // Retour à la position initiale
+                card.style.transition = 'transform 0.3s ease';
+                card.style.transform = 'translateX(0) rotate(0)';
+                card.style.backgroundColor = currCardBgcol;
+            }
+        }
+
+        function swipeLeft() {
+            if (currentCardObject) {
+                //if(desactivateSwipte) return;
+                const card = document.getElementById('current-card');
+                card.classList.add('swipe-left');
+                // Ajouter 0 points
+                if (difficultyModeOn)
+                    handleSwipe(-currentPointAdded);
+                else
+                    handleSwipe(0);
+            }
+        }
+
+        function swipeRight() {
+
+            if (currentCardObject) {
+                if (desactivateSwipte) return;
+                const card = document.getElementById('current-card');
+                card.classList.add('swipe-right');
+                // Ajouter 1 point
+                handleSwipe(currentPointAdded);
+            }
+        }
+
+        function handleSwipe(points) {
+            //if(desactivateSwipte) return;
+            // Ajouter les points au joueur actuel
+            players[currentPlayerIndex].score += points;
+
+            // Arrêter le timer
+            clearInterval(timer);
+
+            // Passer au joueur suivant
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+
+            // Mettre à jour l'affichage
+            updateCurrentPlayer();
+
+            // Attendre que l'animation de swipe soit terminée
+            setTimeout(() => {
+                // Supprimer la carte actuelle
+                const card = document.getElementById('current-card');
+                if (card) {
+                    card.remove();
+                }
+
+                // Afficher la carte suivante
+                displayNextCard();
+
+                // Mettre à jour la liste des joueurs
+                renderPlayersList();
+            }, 500);
+        }
+
+        // Démarrer le timer
+        function startTimer() {
+
+            const filteredcurrentCardObject = specialType.filter(p => p.id == currentCardObject.type);
+
+
+            timerValue = filteredcurrentCardObject[0].timer;//timerDuration;
+            timerElement.textContent = timerValue;
+            timerElement.classList.remove('timer-expired');
+
+            clearInterval(timer);
+            timer = setInterval(() => {
+                timerValue--;
+                timerElement.textContent = timerValue;
+
+                if (timerValue <= 0) {
+                    clearInterval(timer);
+                    // Indiquer visuellement que le temps est écoulé
+                    timerElement.classList.add('timer-expired');
+                    // Ne pas swiper automatiquement
+                    const currCard = document.getElementById("current-card");
+
+                    currCard.style.background = "#dc5656";
+
+
+                    const audio = new Audio("alarm.wav"); // Remplace par le chemin de ton fichier
+                    audio.play();
+
+
+                }
+            }, 1000);
+        }
+
+        // Mettre à jour l'affichage du joueur actuel
+        function updateCurrentPlayer() {
+            if (players.length === 0) {
+                currentPlayerNameElement.textContent = "Aucun";
+                currentPlayerScoreElement.textContent = "0";
+                return;
+            }
+
+            const currentPlayer = players[currentPlayerIndex];
+            currentPlayerNameElement.textContent = currentPlayer.name;
+            currentPlayerScoreElement.textContent = currentPlayer.score;
+
+            const headDiv = document.getElementById("header");
+            headDiv.style.background = currentPlayer.bgColor;
+
+        }
+
+
+        function generateReadableColor() {
+            const hue = Math.floor(Math.random() * 360); // Génère une teinte entre 0 et 359
+            const saturation = 16; // Saturation fixe à 16%
+            const lightness = 81; // Luminosité fixe à 81%
+
+            // Convertir HSL en RGB
+            const hslToRgb = (h, s, l) => {
+                s /= 100;
+                l /= 100;
+                const k = n => (n + h / 30) % 12;
+                const a = s * Math.min(l, 1 - l);
+                const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+                return [Math.round(f(0) * 255), Math.round(f(8) * 255), Math.round(f(4) * 255)];
+            };
+
+            const [r, g, b] = hslToRgb(hue, saturation, lightness);
+
+            // Convertir en format hexadécimal
+            const rgbToHex = (r, g, b) => `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+
+            return rgbToHex(r, g, b);
+        }
+
+
+
+        // Afficher la liste des joueurs
+        function renderPlayersList() {
+            playersList.innerHTML = '';
+
+            players.forEach((player, index) => {
+                const li = document.createElement('li');
+                li.className = `player-item ${index === currentPlayerIndex ? 'active' : ''}`;
+                li.style.background = player.bgColor;
+                li.innerHTML = "" +
+                    "<span class='player-name'>" + player.name + "</span>" +
+                    "<div>" +
+                    "    <span class='player-score' id='playerScore" + player.id + "'>" + player.score + "</span>" +
+                    "    <button class='add-score-player' data-id=" + player.id + ">+</button>" +
+                    "    <button class='minus-score-player' data-id=" + player.id + ">-</button>" +
+                    "    <button class='delete-player' data-id=" + player.id + ">×</button>" +
+                    "</div>";
+
+                // Sélectionner ce joueur quand on clique sur son nom
+                li.querySelector('.player-name').addEventListener('click', () => {
+                    currentPlayerIndex = index;
+                    updateCurrentPlayer();
+                    renderPlayersList();
+                });
+
+                // Supprimer ce joueur
+                li.querySelector('.delete-player').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deletePlayer(player.id);
+                });
+
+
+                li.querySelector('.add-score-player').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    addScore(player.id);
+                });
+                li.querySelector('.minus-score-player').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    minusScore(player.id);
+                });
+
+                playersList.appendChild(li);
+            });
+        }
+
+        // Ajouter un joueur
+        function addPlayer(name) {
+            if (!name.trim()) return;
+
+            const newPlayer = {
+                id: Date.now(),
+                name: name,
+                score: 0,
+                bgColor: generateReadableColor()
+            };
+
+            players.push(newPlayer);
+
+            // Si c'est le premier joueur, le définir comme joueur actuel
+            if (players.length === 1) {
+                currentPlayerIndex = 0;
+                updateCurrentPlayer();
+            }
+
+            renderPlayersList();
+        }
+
+        function updateScore(ind, id, score) {
+            const domVal = document.getElementById("playerScore" + id + "");
+            domVal.innerText = score;
+            if (ind == currentPlayerIndex) {
+                currentPlayerScoreElement.textContent = score;
+            }
+
+        }
+
+        function addScore(id) {
+            const index = players.findIndex(player => player.id === id);
+            players[index].score += 1;
+            updateScore(index, id, players[index].score);
+
+        }
+        function minusScore(id) {
+            const index = players.findIndex(player => player.id === id);
+            players[index].score -= 1;
+            updateScore(index, id, players[index].score);
+
+
+        }
+        // Supprimer un joueur
+        function deletePlayer(id) {
+            const index = players.findIndex(player => player.id === id);
+            if (index === -1) return;
+
+            players.splice(index, 1);
+
+            // Ajuster l'index du joueur actuel si nécessaire
+            if (currentPlayerIndex >= players.length) {
+                currentPlayerIndex = players.length > 0 ? 0 : 0;
+            }
+
+            updateCurrentPlayer();
+            renderPlayersList();
+        }
+
+        // Événements
+        menuButton.addEventListener('click', () => {
+            playersPanel.classList.add('open');
+            overlay.classList.add('open');
+        });
+
+        closePanel.addEventListener('click', () => {
+            playersPanel.classList.remove('open');
+            overlay.classList.remove('open');
+        });
+
+        overlay.addEventListener('click', () => {
+            playersPanel.classList.remove('open');
+            overlay.classList.remove('open');
+        });
+
+        addPlayerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const playerName = addPlayerInput.value;
+            if (playerName.trim()) {
+                addPlayer(playerName);
+                addPlayerInput.value = '';
+                afficherMessage("Ajout d'un nouveau joueur.");
+            }
+            else { afficherMessage("Nom incorrect."); }
+        });
+        setTimerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const timee = setTimerInput.value;
+            const inTimer = parseInt(timee);
+            currentCardObject
+
+            if (!isNaN(inTimer)) {
+                if (currentCardObject != undefined) {
+                    const filteredspecialTypeActive = specialType.filter(p => p.id == currentCardObject.type);
+                    if (filteredspecialTypeActive.length > 0) {
+                        filteredspecialTypeActive[0].timer = inTimer;
+                        console.log(filteredspecialTypeActive[0].timer);
+                    }
+
+                }
+                timerDuration = inTimer;
+            }
+            //setTimerInput.value = "";
+
+            afficherMessage("Timer définit.");
+        });
+        reloadButton.addEventListener('click', () => {
+            remainingCards = [...cards];
+            cardContainer.innerHTML = "";
+            init();
+            afficherMessage("Rechargement des cartes.");
+            console.log(remainingCards.length);
+        });
+        difficultyMode.addEventListener('click', () => {
+            difficultyModeOn = !difficultyModeOn;
+            //console.log(difficultyModeOn);
+            if (difficultyModeOn) {
+                difficultyMode.innerHTML = "Mode difficile : On";
+                difficultyMode.classList.remove('add-difficulty-mode-button-off');
+                difficultyMode.classList.add('add-difficulty-mode-button-on');
+            }
+            else {
+                difficultyMode.innerHTML = "Mode difficile : Off";
+                difficultyMode.classList.remove('add-difficulty-mode-button-on');
+                difficultyMode.classList.add('add-difficulty-mode-button-off');
+            }
+
+        });
+        changePlayerButton.addEventListener('click', () => {
+
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            updateCurrentPlayer();
+        });
+
+
+
+        resetTimerButton1.addEventListener('click', () => {
+            startTimer();
+            const cardElement = document.getElementById('current-card');
+            cardElement.style.backgroundColor = currCardBgcol;
+        });
+
+        reInitButton.addEventListener('click', () => {
+            startTimer();
+            const cardElement = document.getElementById('current-card');
+            cardElement.style.backgroundColor = currCardBgcol;
+        });
+
+
+        dislikeButton.addEventListener('click', swipeLeft);
+        likeButton.addEventListener('click', swipeRight);
+
+
+        function afficherMessage(texte) {
+            const messageDiv = document.getElementById('divMsg');
+            messageDiv.textContent = texte;
+            messageDiv.style.opacity = '1';
+
+            setTimeout(() => {
+                messageDiv.style.opacity = '0';
+            }, 1000); // Lance l'effet après 5 secondes
+        }
+
+        function specificTimer(id) {
+            const filteredcurrentCardObject = specialType.filter(p => p.id == id);
+            const inputimer = document.getElementById("set-specificTimer-input");
+            if (inputimer) {
+                const timerValue = parseInt(inputimer.value);
+                if (!isNaN(timerValue)) {
+                    filteredcurrentCardObject[0].timer = timerValue;
+                }
+            }
+            afficherMessage("Timer mise à jour");
+        }
+
+        function InitValueCardCounter(id) {
+
+            const filteredcurrentCardObject = specialType.filter(p => p.id == id);
+            const inputCardCounter = document.getElementById("set-init-input");
+            const inputCardCounterRnd = document.getElementById("set-init-inputRnd");
+            if (inputCardCounter && inputCardCounterRnd) {
+                let cardCounterValue = parseInt(inputCardCounter.value);
+                let cardCounterRndValue = parseInt(inputCardCounterRnd.value);
+
+                if (!isNaN(cardCounterRndValue)) {
+                    cardCounterRndValue = 0;
+                }
+                if (!isNaN(cardCounterValue)) {
+                    cardCounterValue = -1; // desactivate
+                }
+
+
+                if (!isNaN(cardCounterValue)) {
+                    filteredcurrentCardObject[0].nbCardCounter = cardCounterValue;
+                    filteredcurrentCardObject[0].nbCardCounterRnd = cardCounterRndValue;
+                }
+            }
+            afficherMessage("Card counter mise à jour");
+
+        }
+        function changeTemplateType() {
+
+            let msg = "";
+            const templateType = document.getElementById("lstTemplateType");
+
+            //{id:12, typeName:"Ta Reum", active:true,timer:30,nbCardCounter:30,nbCardCounterRnd:3, nextCardCounter:-1 ,counter:0, bgColor:"#9df8f"},
+            if (templateType.value != 0) // Mime
+            {
+                const filteredcurrentCardObject = specialType.filter(p => p.id == templateType.value);
+                filteredcurrentCardObject[0].active = true;
+                filteredcurrentCardObject[0].nbCardCounter = 0;
+                filteredcurrentCardObject[0].nbCardCounterRnd = 0;
+                filteredcurrentCardObject[0].counter = 0;
+                filteredcurrentCardObject[0].nextCardCounter = calculateNextcounter(filteredcurrentCardObject[0]);
+
+
+                //const defaultType = [{id:1,timer:30,nbCardCounter:10,nbCardCounterRnd:3},
+                defaultType.forEach(element => {
+                    if (element.id != templateType.value) {
+                        const filteredValue = specialType.filter(p => p.id == element.id);
+                        if (filteredValue.length > 0) {
+                            filteredValue[0].active = true;
+                            filteredValue[0].timer = element.timer;
+                            filteredValue[0].nbCardCounter = element.nbCardCounter;
+                            filteredValue[0].nbCardCounterRnd = element.nbCardCounterRnd;
+                            filteredValue[0].counter = 0;
+                            filteredValue[0].nextCardCounter = calculateNextcounter(filteredValue[0]);
+                        }
+                    }
+                });
+
+                msg = "Template de jeu " + filteredcurrentCardObject[0].typeName + " appliqué.";
+            }
+            else {
+                specialType.forEach(element => {
+                    element.active = true;
+                    element.timer = element.timer;
+                    element.nbCardCounter = 0;
+                    element.nbCardCounterRnd = 0;
+                    element.counter = 0;
+                    element.nextCardCounter = calculateNextcounter(element);
+                });
+                msg = "Aucun template de jeu appliqué.";
+            }
+
+            console.log(specialType);
+            afficherMessage(msg);
+        }
+        function changeCardType() {
+
+            const cardtype = document.getElementById("lstCardType");
+            const content = document.getElementById("CardTypeConfig");
+            //console.log(cardtype.value);
+            if (cardtype.value == 0) {
+                content.innerHTML = "";
+            }
+            else {
+                const filteredspecialType = specialType.filter(p => p.id == cardtype.value);
+                if (filteredspecialType.length > 0) {
+                    content.innerHTML = `<div class='panel-title'>
+                    ${filteredspecialType[0].typeName}	
+                    </div>
+                                
+                    <input type="text" class="add-player-input" id="set-specificTimer-input" style="width:100px;" placeholder="Timer" value="${filteredspecialType[0].timer}">
+                    <button type="button" class="add-player-button" id="set-specificTimer-button" onclick='specificTimer(${filteredspecialType[0].id})'>Set</button>			
+                    </br>
+                    <input type="text" class="add-special-input" id="set-init-input" placeholder="compteur apparition" style="width:100px;" value="${filteredspecialType[0].nbCardCounter}">
+                    <input type="text" class="add-special-input" id="set-init-inputRnd" placeholder="+/-" style="width:100px;" value="${filteredspecialType[0].nbCardCounterRnd}">
+                    <button type="button" id="set-init-button" class="add-player-button"  style="width:100px;" onclick="InitValueCardCounter(${filteredspecialType[0].id})">Init.</button>
+                    `;
+
+
+
+                }
+            }
+        }
+
+
+        function activateSpecial(nb, objCheck) {
+            const filteredspecialTypeActive = specialType.filter(p => p.id == nb);
+            if (filteredspecialTypeActive.length > 0) {
+                filteredspecialTypeActive[0].active = objCheck.checked;
+            }
+            /*
+            const filteredspecialType = specialType.filter( p => p.id === nb );
+            if(filteredspecialType.length>0)
+            {
+                filteredspecialType[0].active = objCheck.checked;
+            }
+
+            const activeIds = specialType.filter(item => item.active) // Filtrer les éléments où active est false
+                                            .map(item => item.id); // Extraire seulement les ids
+
+
+              //                              console.log(remainingSpecialCards.length+"----ddddd------");
+            if(objCheck.checked)
+            {                
+                remainingSpecialCards = [...remainingSpecialCards,...specialCards.filter(item => item.type===nb)];
+            }
+            else // retrait
+            {
+                remainingSpecialCards = remainingSpecialCards.filter(item => activeIds.includes(item.type));
+            }
+            */
+        }
+        function toggleAccordion() {
+            const content = document.querySelector(".accordion-content");
+            content.style.display = content.style.display === "block" ? "none" : "block";
+        }
+
+        document.getElementById('flip-button').addEventListener('click', function () {
+            const currentCard = document.getElementById('current-card');
+            if (!currentCard) return;
+
+            currentCard.removeAttribute('style');
+            currentCard.style.backgroundColor = currCardBgcol;
+            currentCard.classList.toggle('flipped');
+
+            const frontText = currentCard.querySelector('.front');
+            const backText = currentCard.querySelector('.back');
+
+            if (currentCard.classList.contains('flipped')) {
+                //console.log(backText);
+                if (backText && backText != null)
+                    backText.style.display = 'flex';
+
+                if (frontText && frontText != null)
+                    frontText.style.display = 'none';
+            } else {
+
+                if (backText && backText != null)
+                    backText.style.display = 'none';
+
+                if (frontText && frontText != null)
+                    frontText.style.display = 'flex';
+            }
+            isFront = !isFront;
+            adjustFontSize();
+        });
+
+        // Initialiser l'application
+
+
+        if (islocal)
+            init();
+
+        //////////////////////////////// A DEFINIR 
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((registration) => {
+                        console.log('Service Worker enregistré avec succès');
+                    })
+                    .catch((error) => {
+                        console.log('Erreur d\'enregistrement du Service Worker:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+
+</html>

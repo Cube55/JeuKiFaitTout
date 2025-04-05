@@ -182,6 +182,24 @@
             right: 0;
         }
 
+        .info-panel {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 80%;
+            max-width: 400px;
+            height: 100%;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+            transition: right 0.3s ease;
+            padding: 20px;
+            z-index: 30;
+            overflow-y: auto;
+        }
+
+        .info-panel.open {
+            left: 0;
+        }
         .panel-header {
             display: flex;
             justify-content: space-between;
@@ -341,6 +359,44 @@
         .ttdtc-button:hover {
             background-color: #1b669b;
         }
+        ul {
+            margin-left: 0;
+        }​
+
+        /* --- Div qui remplace le bouton --- */
+        .proposal-button, 
+        .proposal-button1 {
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            border-radius: 2%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 0 auto;
+            color: white;
+            font-weight: bold;
+            padding:5px;
+        }
+        .proposal-button1 {
+            background-color: #8eb237;
+        }
+        
+        .proposal-button {
+            background-color: #1F77B4;
+        }
+
+        /* --- Effet hover --- */
+        .proposal-button:hover {
+            background-color: #1b669b;
+        }
+        /* --- Effet hover --- */
+        .proposal-button1:hover {
+            background-color: #657e27;
+        }
+
 
 
         .add-player-button:hover {
@@ -759,6 +815,7 @@
     <script src="carddata12.js"></script>
     <script src="carddata13.js"></script>
     <script src="carddata14.js"></script>
+    <script src="carddata15.js"></script>
 </head>
 
 <body>
@@ -770,7 +827,9 @@
         </div>
 
         <div class="timer-container">
+            
             <div class="current-score-div">
+                <span onclick="infoPanelOpen()">ℹ️</span>
                 <button class='minus-score-player' onclick="addCurrentScore(-1)">-</button>
                 <span id="currentScoreToAdd"></span>
                 <button class='add-score-player' onclick="addCurrentScore(1)">+</button>
@@ -837,12 +896,26 @@
         </div>
         </br>
         <button type="button" class="add-difficulty-mode-button-off" id="difficulty-mode-button">Mode difficile :
-            Off</button>&nbsp;<button type="button" class="add-difficulty-mode-button-on" id="sound-mode-button">🔊</button>
+            Off</button>&nbsp;<button type="button" class="add-difficulty-mode-button-off" id="sound-mode-button">🔇</button>
         </br>
         <div id="divMsg"></div>
         </br>
         </br>
         <button type="button" class="add-player-button" id="reload-button">Reload card</button>
+    </div>
+    <div class="info-panel" id="info-panel">
+        
+        <div class="panel-header">
+            <h2 class="panel-title">infos</h2>
+            <button class="close-panel" id="close-info-panel">×</button>
+
+        </div>
+        
+        <div id="infosRules">
+              
+            </div>
+
+
     </div>
 
     <div class="overlay" id="overlay"></div>
@@ -864,25 +937,29 @@
         { id: 12, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
         { id: 13, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
         { id: 14, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 15, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
         ];
 
 
         const islocal = true;
 
-        const specialType = [{ id: 1, typeName: "Règles", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#AECAF4", icon: "☑️" },
-        { id: 2, typeName: "Mime", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#d5b0c5", icon: "🙆‍♂️" },
-        { id: 3, typeName: "Dilèmme", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#b6f7ec", icon: "🫸🏻" },
-        { id: 4, typeName: "Défis", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#C5B0D5", icon: "🥏" },
-        { id: 5, typeName: "Vérité", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#FFBB78", icon: "🤞🏿" },
-        { id: 6, typeName: "Quizz", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#98DF8A", icon: "💊", icon2: "💡" },
-        { id: 7, typeName: "Action collective", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#d5d4b0", icon: "👨‍👩‍👧‍👦" },
-        { id: 8, typeName: "Roleplay", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#DBDB8D", icon: "🕵️" },
-        { id: 9, typeName: "Classement", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#9EDAE5", icon: "🔢" },
-        { id: 10, typeName: "TTDTC", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#8e95c1", icon: "🌍", icon2: "💡" },
-        { id: 11, typeName: "JuduFion", active: true, timer: 8, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#C49C94", icon: "🔞" },
-        { id: 12, typeName: "Ta Reum", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#BCBD22", icon: "👓", icon2: "💡" },
-        { id: 13, typeName: "Bac", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#82e0aa", icon: "🅱️" },
-        { id: 14, typeName: "Mot dice", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#f9e79f", icon: "🐈‍⬛" },
+        const specialType = [
+        { id: 1, typeName: "Règles", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#AECAF4", icon: "☑️", "rules":"Les cartes Règles modifient temporairement les règles du jeu. Elles peuvent s’appliquer à la carte suivante. Dans ce cas, le même joueur rejoue (n’oubliez pas de remettre ce joueur en cours pour le calcul des scores). Il peut gagner ou perdre un point bonus selon qu’il respecte ou non la règle." },
+        { id: 2, typeName: "Mime", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#d5b0c5", icon: "🙆‍♂️", "rules":"Le joueur doit mimer ce qui est décrit sur la carte, en essayant d’être soit le plus ressemblant… soit le plus drôle !" },
+        { id: 3, typeName: "Dilèmme", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#b6f7ec", icon: "🫸🏻", "rules":"Vous aimez les débats ? Répondez à ce dilemme en respectant la consigne suivante : défendez l'une ou l'autre partie avec vos propres arguments, en faisant preuve d’imagination ! Vous débattez contre les autres joueurs ou contre un joueur désigné sur la carte. Le consensus général déterminera qui remporte le point. Si vous débattez contre plusieurs joueurs (trois ou plus) et que la majorité l’emporte, aucun point n’est attribué, ni à vous ni aux autres." },
+        { id: 4, typeName: "Défis", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#C5B0D5", icon: "🥏", "rules":"Le joueur doit relever le défi indiqué sur la carte. Le consensus du groupe détermine si le défi est réussi ou non." },
+        { id: 5, typeName: "Vérité", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#FFBB78", icon: "🤞🏿", "rules":"Le joueur doit répondre à la question en toute sincérité, sans mentir." },
+        { id: 6, typeName: "Quizz", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#98DF8A", icon: "💊", icon2: "💡", "rules":"Répondez à la question posée. Vous pouvez vérifier la bonne réponse sur Internet." },
+        { id: 7, typeName: "Action collective", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#d5d4b0", icon: "👨‍👩‍👧‍👦", "rules":"Tous les joueurs doivent coopérer pour reproduire ce qui est décrit sur la carte. Si c’est réussi, chaque joueur gagne 1 point." },
+        { id: 8, typeName: "Roleplay", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#DBDB8D", icon: "🕵️", "rules":"Le joueur doit rejouer la scène décrite sur la carte aussi fidèlement que possible. Si un autre joueur est impliqué, cela sera précisé sur la carte. Si le groupe valide la performance, les deux joueurs gagnent 1 point." },
+        { id: 9, typeName: "Classement", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#9EDAE5", icon: "🔢", "rules":"Le joueur doit classer les éléments de la carte dans le bon ordre. Le classement est validé (ou non) par le consensus du groupe." },
+        { id: 10, typeName: "TTDTC", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#8e95c1", icon: "🌍", icon2: "💡", "rules":"Choisis ton niveau selon le thème proposé (clique sur un chiffre de 1 à 10 : 1 étant \"niveau nul\", 10 \"niveau incollable\"). Une question apparaîtra selon ton niveau. Retourne la carte pour voir la réponse." },
+        { id: 11, typeName: "JuduFion", active: true, timer: 8, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#C49C94", icon: "🔞", "rules":"Réponds à une question politiquement incorrecte dans un temps limité. Vitesse et réactivité sont clés ! Fonctionne très bien avec les cartes Règles." },
+        { id: 12, typeName: "Ta Reum", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#BCBD22", icon: "👓", icon2: "💡", "rules":"Un joueur adverse lit secrètement le dos de la carte, qui décrit un personnage et une situation. Le joueur principal doit les deviner en posant des questions auxquelles l’adversaire ne peut répondre que par \"oui\" ou \"non\" (sans tricher !). S’il devine les deux avant la fin du compte à rebours, il marque 1 point." },
+        { id: 13, typeName: "Bac", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#82e0aa", icon: "🅱️", "rules":"Le joueur doit trouver un mot commençant par la lettre définie dans le thème annoncé. Pas le droit d’inventer un mot ! C’est un \"bac\" classique." },
+        { id: 14, typeName: "Mot dice", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#f9e79f", icon: "🐈‍⬛", "rules":"Sans montrer la carte aux autres, le joueur actif la retourne et découvre plusieurs mots, chacun avec un nombre d’indices autorisés. Il choisit un mot et fait deviner ce mot aux autres, indice par indice.<ul><li>Plus il donne d’indices, plus il marque de points (1 point par indice donné), à condition qu’un autre joueur devine le mot à la fin (ce dernier gagne aussi 1 point).</li><li>Si un joueur adverse devine le mot avant que tous les indices soient donnés, il gagne le nombre d’indices restants en points. Le joueur actif gagne alors le nombre de points correspondant aux indices déjà donnés.</li><li>Si le joueur actif donne un indice volontairement hors sujet pour rendre le jeu plus difficile, il est pénalisé : il devra donner autant d’indices supplémentaires que le nombre initial prévu !</li></ul>" },
+        { id: 15, typeName: "Association limite", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#b98bd6", icon: "🌶️", "rules":"Le joueur actif lit une phrase à trou. Un joueur adverse désigné regarde secrètement le verso de la carte avec plusieurs propositions. Il en choisit une et clique dessus. La proposition choisie est ensuite mélangée à d'autres aléatoires. Le joueur actif doit alors deviner la bonne réponse.<ul><li>Si la réponse est correcte, elle s’affiche en vert.</li><li>Sinon, elle s’affiche en rouge.</br><b>Variante Participative</b></br>Dans cette variante, tous les joueurs participent activement. Tous les joueurs ouvrent le jeu et désactivent toutes les options, sauf « Association Limite », afin d’accéder directement aux propositions (sans voir la question). Le joueur actif lit sa question, et les autres répondent en sélectionnant l'une de leurs propositions. Le joueur actif choisit la réponse la plus drôle, et le joueur qui l’a proposée gagne un point.</li></ul>" },
+
         ];
 
 
@@ -906,9 +983,18 @@
         cards = cards.concat(carddata12);
         cards = cards.concat(carddata13);
         cards = cards.concat(carddata14);
+        cards = cards.concat(carddata15);
 
         //#endregion cards
         console.log(cards.length);
+        function initRules() {
+            specialType.forEach(element => {                
+                infosRules.innerHTML +="<h2 id='infoType"+element.id+"'>"+element.icon+" "+element.typeName+"</h2>";
+                infosRules.innerHTML +="<p>"+element.rules+"</p></br>";
+            });
+
+
+        }
 
         function specialTypeHtml() {
 
@@ -959,10 +1045,14 @@
                 .catch(error => console.error("Erreur:", error));
 
         }
+        
+        const audio = new Audio("alarm.wav"); // Remplace par le chemin de ton fichier
+        audio.load(); // Précharge le fichier
+
         let desactivateSwipte = false;
         let currentCardObject;
         let isFront = true;
-        let soundModeOn = true;
+        let soundModeOn = false;
         //console.log(cards);
         let remainingCards = [...cards];
         const iconList = getIconsType();
@@ -992,7 +1082,9 @@
         const timerElement = document.getElementById('timer');
         const menuButton = document.getElementById('menu-button');
         const playersPanel = document.getElementById('players-panel');
+        const infoPanel = document.getElementById('info-panel');
         const closePanel = document.getElementById('close-panel');
+        const closeInfoPanel = document.getElementById('close-info-panel');
         const overlay = document.getElementById('overlay');
         const playersList = document.getElementById('players-list');
         const addPlayerForm = document.getElementById('add-player-form');
@@ -1023,6 +1115,7 @@
         const lstTemplateType = document.getElementById('lstTemplateType');
         const flipButton = document.getElementById('flip-button');
         const currentScoreToAdd = document.getElementById('currentScoreToAdd');
+        const infosRules = document.getElementById('infosRules');
         function removeHtmlTags(str) {
             return str.replace(/<[^>]*>/g, '');
         }
@@ -1030,7 +1123,7 @@
 
         setTimerInput.value = "";
 
-
+        initRules();
         // Initialisation
         function init() {
 
@@ -1133,7 +1226,70 @@
             // Au cas où (normalement jamais atteint)
             return null;
         }
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                // Génère un index aléatoire entre 0 et i
+                const j = Math.floor(Math.random() * (i + 1));
+                // Échange les éléments array[i] et array[j]
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
 
+        function showFinalResultAssosLimit(isValid, idPropal) 
+        {            
+            const currCardBackDiv = document.getElementById('BackTextId');
+            if(currCardBackDiv)
+            {
+                currCardBackDiv.innerHTML="<span class='eye-icon1'>💡</span>";
+                if(currentCardObject.listPropal && currentCardObject.listPropal.length>0)
+                {
+                    currCardBackDiv.innerHTML = currentCardObject.desc.replace('____', "<font color='"+ (isValid?"green":"red")+"'>"+currentCardObject.listPropal[idPropal]+"</font>");
+                }
+                currCardBackDiv.innerHTML+="";
+            }
+            desactivateSwipte = false;
+            adjustFontSize(undefined, 0.9, 0.9);
+            resetTimer();
+        }
+
+        function showresultAssosLimit(idPropal) 
+        {
+
+            if(currentCardObject.listPropal && currentCardObject.listPropal.length>0 && currentCardObject.listPropalRandom && currentCardObject.listPropalRandom.length>0)
+            {
+                const currCardBackDiv = document.getElementById('BackTextId');
+                if(currCardBackDiv)
+                { 
+                    let arrResult = currentCardObject.listPropalRandom;
+                    arrResult.push(currentCardObject.listPropal[idPropal]);
+
+                               
+                    let arrResultShuffled = shuffleArray([...arrResult]);
+
+                    console.log(arrResultShuffled)
+                    let strResult = "<span class='eye-icon'>🌶️</span><div  class='table-container'><table>";    
+                    strResult +="<tr><td>"+currentCardObject.desc+"</td></tr>";
+                    for(let ik = 0;ik<arrResultShuffled.length;ik++)
+                    {
+                        let isValid = false;
+                        if(arrResultShuffled[ik] === currentCardObject.listPropal[idPropal])
+                            isValid = true;
+                        strResult += "<tr><td ><div class='proposal-button' onclick='showFinalResultAssosLimit("+isValid+","+idPropal+")'>"+arrResultShuffled[ik]+"</div></td></tr>";
+                    }
+                    strResult += "</table></div>";   
+                    
+
+                    currCardBackDiv.innerHTML = strResult;
+                        
+                    
+                    //card.versoRandom = "<div class='proposition-assos-limite'>"+card2.desc+"</div></br>";
+                }
+            }
+            resetTimer();
+            adjustFontSize(undefined, 0.9, 0.9);
+            
+        }
 
 
         function getRandomCardByTypes(cards, typesTmp) {
@@ -1150,7 +1306,7 @@
 
             // Filtrer les indices des cartes correspondant à l'un des types donnés
             const filteredIndices = cards
-                .map((card, index) => types.includes(card.type) ? index : -1)
+                .map((card, index) => types.includes(card.type) && (!card.notInclude) ? index : -1)
                 .filter(index => index !== -1);
 
             if (filteredIndices.length === 0) {
@@ -1170,8 +1326,59 @@
             currCardBgcol = filteredspecialTypeActive[0].bgColor;
 
             //console.log(activeMotdice, card.type);
+            if (card.type == 15) // association limite
+            {
+                
+                const filteredIndices2 = cards
+                    .map((c, index) =>
+                        (c.type == 15 && c.notInclude)? index : -1)
+                    .filter(index => index !== -1);
 
-            if (card.type == 14 || (activeMotdice && card.type == 12)) // mot dice
+
+                if (filteredIndices2.length === 0) {
+                    return null; // Aucune carte ne correspond aux types demandés
+                }
+
+                // Sélectionner un index au hasard parmi les cartes filtrées
+                let nbProposition = (Math.floor(Math.random() * (4 - 3 + 1)) + 3); // nombre de proposition au joueur entre 3 et 4
+                let nbPropositionRandom = (Math.floor(Math.random() * (3 - 1 + 1)) + 1); // nombre de proposition random ajouté au résultat entre 1 et 3
+
+                if(difficultyModeOn)
+                {
+                    nbProposition = 3; // min
+                    nbPropositionRandom = 3;
+                }
+
+                card.verso = "<span class='eye-icon1'>🙈</span><div  class='table-container'><table>";
+                card.verso +="<tr><td>"+card.desc+"</td></tr>";
+                card.listPropal = [];
+                card.listPropalRandom = [];
+                for(let ik = 0;ik<nbProposition;ik++)
+                {
+                    const randomIndex2 = filteredIndices2[Math.floor(Math.random() * filteredIndices2.length)];
+                    filteredIndices2.splice(filteredIndices2.indexOf(randomIndex2),1);
+                    const card2 = cards.splice(randomIndex2, 1)[0];
+
+                    card.verso += "<tr><td ><div class='proposal-button1' onclick='showresultAssosLimit("+ik+")'>"+card2.desc+"</div></td></tr>";
+                    card.listPropal.push(card2.desc);
+                }
+                card.verso+="</table></div>";
+
+
+                for(let ik = 0;ik<nbPropositionRandom;ik++)
+                {
+                    const randomIndex2 = filteredIndices2[Math.floor(Math.random() * filteredIndices2.length)];
+                    filteredIndices2.splice(filteredIndices2.indexOf(randomIndex2),1);
+                    const card2 = cards.splice(randomIndex2, 1)[0];
+
+                    card.listPropalRandom.push(card2.desc);
+                }
+
+
+                desactivateSwipte = true;
+
+            }
+            else if (card.type == 14 || (activeMotdice && card.type == 12)) // mot dice
             {
 
                 const filteredIndices2 = cards
@@ -1196,10 +1403,12 @@
 
                 if (activeMotdice && card.type == 12 && card.subType != 1) {
                     const randomIndex1 = filteredIndices2[Math.floor(Math.random() * filteredIndices2.length)];
+                    filteredIndices2.splice(filteredIndices2.indexOf(randomIndex1),1);
                     const card1 = cards.splice(randomIndex1, 1)[0];
                     mot1 = card1.desc;
                 }
                 const randomIndex2 = filteredIndices2[Math.floor(Math.random() * filteredIndices2.length)];
+                filteredIndices2.splice(filteredIndices2.indexOf(randomIndex2),1);
                 const card2 = cards.splice(randomIndex2, 1)[0];
                 const mot2 = card2.desc;
 
@@ -1237,7 +1446,7 @@
             }
             else if (card.type == 12) // ta reum
             {
-                console.log("rrrr");
+                //console.log("rrrr");
                 let subType = 1; // char
                 if (card.subType == 1)
                     subType = 2;
@@ -1252,6 +1461,7 @@
 
                 // Sélectionner un index au hasard parmi les cartes filtrées
                 const randomIndex2 = filteredIndices2[Math.floor(Math.random() * filteredIndices2.length)];
+                filteredIndices2.splice(filteredIndices2.indexOf(randomIndex2),1);
                 let card2 = cards.splice(randomIndex2, 1)[0];
 
 
@@ -1532,7 +1742,7 @@
 
 
 
-        function adjustFontSize(forcedivId, witdthPercent, heightPercent, heightForceCheck) {
+        function adjustFontSize(forcedivId, witdthPercent, heightPercent, heightForceCheck, widthForceCheck) {
 
             let witdthPercentValue = 1;
             let heightPercentValue = 1;
@@ -1544,6 +1754,8 @@
                 heightPercentValue = heightPercent;
             if (heightForceCheck != undefined)
                 heightForceCheckValue = heightForceCheck;
+            if (widthForceCheck != undefined)
+                widthForceCheckValue = widthForceCheck;
             // Verso de la carte
             let id = "FrontTextId";
             if (!isFront) {
@@ -1768,7 +1980,6 @@
 
                     if(soundModeOn)
                     {
-                        const audio = new Audio("alarm.wav"); // Remplace par le chemin de ton fichier
                         audio.play();
                     }
 
@@ -1933,8 +2144,13 @@
             playersPanel.classList.remove('open');
             overlay.classList.remove('open');
         });
+        closeInfoPanel.addEventListener('click', () => {
+            infoPanel.classList.remove('open');
+            overlay.classList.remove('open');
+        });
 
         overlay.addEventListener('click', () => {
+            infoPanel.classList.remove('open');
             playersPanel.classList.remove('open');
             overlay.classList.remove('open');
         });
@@ -2013,18 +2229,35 @@
             updateCurrentPlayer();
         });
 
+        function infoPanelOpen()
+        {            
+            infoPanel.classList.add('open');
+            overlay.classList.add('open');
+
+            if(currentCardObject)
+            {                                
+                const element = document.getElementById("infoType"+currentCardObject.type);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+
+        }
 
 
-        resetTimerButton1.addEventListener('click', () => {
+        function resetTimer()
+        {
             startTimer();
             const cardElement = document.getElementById('current-card');
             cardElement.style.backgroundColor = currCardBgcol;
+        }
+
+        resetTimerButton1.addEventListener('click', () => {
+            resetTimer();
         });
 
         reInitButton.addEventListener('click', () => {
-            startTimer();
-            const cardElement = document.getElementById('current-card');
-            cardElement.style.backgroundColor = currCardBgcol;
+            sresetTimer();
         });
 
 
@@ -2217,7 +2450,13 @@
             }
             isFront = !isFront;
             console.log("----------");
-            adjustFontSize();
+
+            if(currentCardObject.type == 15 && !isFront)
+            {                
+                adjustFontSize(undefined,0.9,0.9);
+            }
+            else
+                adjustFontSize();
         });
 
         // Initialiser l'application

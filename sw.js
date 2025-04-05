@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jkft-cache-v1';
+const CACHE_NAME = 'jkft-cache-v1.1';
 const urlsToCache = [
   './',
   './index.html',
@@ -38,13 +38,14 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   // Prend le contrôle immédiatement
   event.waitUntil(self.clients.claim());
-  
-  // Nettoie les anciens caches
-  event.waitUntil(
+
+   // Nettoie les anciens caches
+   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
+            console.log('Suppression de l\'ancien cache:', cacheName);
             return caches.delete(cacheName);
           }
         })

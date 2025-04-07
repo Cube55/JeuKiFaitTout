@@ -17,6 +17,7 @@ const urlsToCache = [
   './carddata13.js',
   './carddata14.js',
   './carddata15.js',
+  './carddata16.js',
   './alarm.wav'
   // Ajoutez tous vos fichiers JS et autres ressources
 ];

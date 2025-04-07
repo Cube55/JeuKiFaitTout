@@ -335,6 +335,27 @@
             align-items: center;
         }
 
+        /* --- Tableau plein, boutons qui remplissent la cellule --- */
+        .table-container-angry table {
+            width: 100%;
+            height: 100%;
+            /*border: 2px solid black;*/
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        .table-container-angry td {
+            width: 20%;
+            /* 3 colonnes, si vous voulez forcer */
+            /* Chaque cellule prend la hauteur disponible dans le tableau */
+            height: 25%;
+            /* 4 lignes = 100 / 4 = 25% */
+            /*border: 1px solid #000;*/
+            padding: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+
 
         /* --- Div qui remplace le bouton --- */
         .ttdtc-button {
@@ -353,11 +374,27 @@
             font-weight: bold;
         }
 
-
+        .ttdtc-button.active 
+        {
+            background-color: #4eb41f;
+        }
 
         /* --- Effet hover --- */
         .ttdtc-button:hover {
             background-color: #1b669b;
+        }
+        
+        .ttdtc-button.active:hover
+        {
+            background-color: #3c8a17;
+        }
+        .ttdtc-button.inactive 
+        {
+            background-color: #b8b8b8;
+        }        
+        .ttdtc-button.inactive:hover
+        {
+            background-color: #7e7e7e;
         }
         ul {
             margin-left: 0;
@@ -396,7 +433,14 @@
         .proposal-button1:hover {
             background-color: #657e27;
         }
+        .proposal-button.inactive {
+            background-color: #abb2b8;
+        }
 
+        /* --- Effet hover --- */
+        .proposal-button.inactive:hover {
+            background-color: #8e9499;
+        }
 
 
         .add-player-button:hover {
@@ -816,6 +860,7 @@
     <script src="carddata13.js"></script>
     <script src="carddata14.js"></script>
     <script src="carddata15.js"></script>
+    <script src="carddata16.js"></script>
 </head>
 
 <body>
@@ -913,7 +958,8 @@
         
         <div id="infosRules">
               
-            </div>
+        </div>
+        
 
 
     </div>
@@ -938,6 +984,7 @@
         { id: 13, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
         { id: 14, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
         { id: 15, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 16, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
         ];
 
 
@@ -959,6 +1006,7 @@
         { id: 13, typeName: "Bac", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#82e0aa", icon: "🅱️", "rules":"Le joueur doit trouver un mot commençant par la lettre définie dans le thème annoncé. Pas le droit d’inventer un mot ! C’est un \"bac\" classique." },
         { id: 14, typeName: "Mot dice", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#f9e79f", icon: "🐈‍⬛", "rules":"Sans montrer la carte aux autres, le joueur actif la retourne et découvre plusieurs mots, chacun avec un nombre d’indices autorisés. Il choisit un mot et fait deviner ce mot aux autres, indice par indice.<ul><li>Plus il donne d’indices, plus il marque de points (1 point par indice donné), à condition qu’un autre joueur devine le mot à la fin (ce dernier gagne aussi 1 point).</li><li>Si un joueur adverse devine le mot avant que tous les indices soient donnés, il gagne le nombre d’indices restants en points. Le joueur actif gagne alors le nombre de points correspondant aux indices déjà donnés.</li><li>Si le joueur actif donne un indice volontairement hors sujet pour rendre le jeu plus difficile, il est pénalisé : il devra donner autant d’indices supplémentaires que le nombre initial prévu !</li></ul>" },
         { id: 15, typeName: "Association limite", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#b98bd6", icon: "🌶️", "rules":"Le joueur actif lit une phrase à trou. Un joueur adverse désigné regarde secrètement le verso de la carte avec plusieurs propositions. Il en choisit une et clique dessus. La proposition choisie est ensuite mélangée à d'autres aléatoires. Le joueur actif doit alors deviner la bonne réponse.<ul><li>Si la réponse est correcte, elle s’affiche en vert.</li><li>Sinon, elle s’affiche en rouge.</br><b>Variante Participative</b></br>Dans cette variante, tous les joueurs participent activement. Tous les joueurs ouvrent le jeu et désactivent toutes les options, sauf « Association Limite », afin d’accéder directement aux propositions (sans voir la question). Le joueur actif lit sa question, et les autres répondent en sélectionnant l'une de leurs propositions. Le joueur actif choisit la réponse la plus drôle, et le joueur qui l’a proposée gagne un point.</li></ul>" },
+        { id: 16, typeName: "Ca m'éneve", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#d1a568", icon: "💢", "rules":"Un jeu pour juger ceux qui t’énervent… sur 4 niveaux !</br>🫶 : Ça ne me dérange pas trop</br>🖕 : Juste un doigt</br>🚔 : Direct en prison</br>☠️ : Ça mérite la mort</br></br>Le joueur principal découvre une série d’énoncés et attribue secrètement à chacun d’eux un niveau de jugement selon son humeur du moment.</br></br>Ensuite, chaque joueur, à tour de rôle, sélectionne en secret le niveau qu’il attribuerait à chaque énoncé (le joueur concerné est indiqué en haut de l’écran).</br></br>Une fois que tout le monde a joué, les résultats sont révélés :<ul><li>Chaque joueur qui a deviné le même jugement que le joueur principal gagne 1 point.</li><li>Si personne ne trouve la réponse du joueur principal, ce dernier marque un nombre de points égal au nombre de joueurs.</li></ul>" },
 
         ];
 
@@ -984,6 +1032,7 @@
         cards = cards.concat(carddata13);
         cards = cards.concat(carddata14);
         cards = cards.concat(carddata15);
+        cards = cards.concat(carddata16);
 
         //#endregion cards
         console.log(cards.length);
@@ -992,7 +1041,7 @@
                 infosRules.innerHTML +="<h2 id='infoType"+element.id+"'>"+element.icon+" "+element.typeName+"</h2>";
                 infosRules.innerHTML +="<p>"+element.rules+"</p></br>";
             });
-
+            infosRules.innerHTML +="</br><p>🙈 : Cette icône indique que la carte (ou la carte suivante) ne doit <b>pas</b> être montrée à tout le monde. Seul le joueur indiqué (en haut ou sur la carte) doit la consulter.</br>💡 : Cette icône correspond à la <b>réponse</b>.</p></br>";
 
         }
 
@@ -1050,6 +1099,7 @@
         audio.load(); // Précharge le fichier
 
         let desactivateSwipte = false;
+        let activateGreenSwipe = false;
         let currentCardObject;
         let isFront = true;
         let soundModeOn = false;
@@ -1063,6 +1113,7 @@
             { id: 1, name: "Joueur 1", score: 0, bgColor: generateReadableColor() },
             { id: 2, name: "Joueur 2", score: 0, bgColor: generateReadableColor() }
         ];
+        let multipleScoreAdd = [];
         let currentPlayerIndex = 0;
         const defaultTimer = 10;
         let timerDuration = defaultTimer; // en secondes
@@ -1072,6 +1123,7 @@
         let startX = 0;
         let currentX = 0;
         let currentPointAdded = 1;
+        let currentIndexPlayerDisplayRound=0;
 
         let difficultyModeOn = false;
         let currCardBgcol = "white";
@@ -1161,6 +1213,9 @@
             return Math.floor(Math.random() * ((element.nbCardCounter + element.nbCardCounterRnd) - (element.nbCardCounter - element.nbCardCounterRnd) + 1) + (element.nbCardCounter - element.nbCardCounterRnd));
 
         }
+
+
+
         function GetCard() {
             //specialType = [{id:1, typeName:"Règles", active:true,timer:30,nbCardCounter:10,nbCardCounterRnd:3, counter:0},
 
@@ -1291,7 +1346,309 @@
             
         }
 
+        function validateAngryChoice(playerInd)
+        {
+            
+            const currCardDiv = document.getElementById('FrontTextId');
 
+            {
+
+                if(currentCardObject && currentCardObject.playerChoice && currentCardObject.playerChoice.length>0)
+                {
+                    const playersChoice = currentCardObject.playerChoice.filter(p => p.playerIndex == playerInd);
+                    if(playersChoice.length>0)
+                    {                    
+                        if(playersChoice[0].choice && playersChoice[0].choice.length==3)
+                        {
+                            let isValid = true;
+
+                            for(let ik=0;ik<playersChoice[0].choice.length;ik++)
+                            {
+                                if(playersChoice[0].choice[ik] == -1)
+                                {
+                                    isValid = false;
+                                    break;
+                                }
+                            }
+
+                            if(isValid)
+                            {
+                                // delete prev
+                                if(playerInd != -1)
+                                {
+                                    const indPlayerToTem = currentCardObject.playerToPlayId.indexOf(players[playerInd].id);
+
+                                    if(indPlayerToTem > -1)
+                                        currentCardObject.playerToPlayId.splice(indPlayerToTem,1);
+                                }
+
+                                if(currentCardObject.playerToPlayId && currentCardObject.playerToPlayId.length == 0)
+                                {
+                                    currCardDiv.innerHTML=generateAngryResult();
+                                }
+                                else
+                                {
+                                    if(currentCardObject.playerToPlayId)
+                                    {          
+                                        for(let ig = 0; ig <currentCardObject.playerToPlayId.length;ig++ )
+                                        {
+                                            //const currPlayerToPlay = players[currentCardObject.playerToPlayId[ig]];
+                                            const currPlayerToPlay = players.filter(p => p.id == currentCardObject.playerToPlayId[ig]);                                            
+
+                                            if(currPlayerToPlay != undefined)
+                                            {
+                                                const indexVal = players.map(function(d) { return d['id']; }).indexOf(currentCardObject.playerToPlayId[ig]);
+                                                
+                                                // reinit display                                        
+                                                currCardDiv.innerHTML = generateCardAngry(currentCardObject, currentCardObject.dataCardExt[0], currentCardObject.dataCardExt[1], indexVal)
+
+                                            };
+                                        }                               
+
+                                    }
+                                    currentCardObject.previousPlayerToPlayId=players[playerInd].id;
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+            
+        }
+        function savePlayerChoiceAngryThing(playerInd, currCardInd, choice)
+        {            
+
+
+            const elChoice = document.getElementById("angryChoice"+currCardInd+""+choice);//listEl[choice];
+            
+
+            if(!elChoice.classList.contains('inactive'))
+            {
+
+                if(!currentCardObject.playerChoice)
+                {
+                    currentCardObject.playerChoice = [];
+                }
+                
+                
+                let playersChoice = currentCardObject.playerChoice.filter(p => p.playerIndex == playerInd);
+
+                if(playersChoice.length==0)
+                {
+                    currentCardObject.playerChoice.push({playerIndex:playerInd, choice : [-1,-1,-1]});
+                    playersChoice = currentCardObject.playerChoice.filter(p => p.playerIndex == playerInd);
+                }
+                
+                if(playersChoice.length>0 && playersChoice[0].choice.length>0)
+                {
+                    // update prev choice
+                    if(playersChoice[0].choice[currCardInd] != -1)
+                    {                    
+                        //console.log(playersChoice[0].choice[currCardInd]);
+                        const elChoicePrev = document.getElementById("angryChoice"+currCardInd+""+playersChoice[0].choice[currCardInd]);//listEl[choice];
+                        if(elChoicePrev)
+                            elChoicePrev.classList.remove('active');    
+                                
+                        for(let ok = 0;ok<3;ok++)
+                        {
+                            const elChoiceA = document.getElementById("angryChoice"+ok+""+playersChoice[0].choice[currCardInd]);//listEl[choice];
+                            if (elChoiceA.classList.contains('inactive')) 
+                                    elChoiceA.classList.remove('inactive');
+                        
+                        }
+                    }
+
+
+                    playersChoice[0].choice[currCardInd] = choice;
+                    if(elChoice)
+                    {            
+                        elChoice.classList.toggle('active');
+                    }
+                    // griser le choix pour les autres propal
+
+                    for(let ok = 0;ok<3;ok++)
+                    {
+                        if(ok!=currCardInd)
+                        {
+                            const elChoiceA = document.getElementById("angryChoice"+ok+""+choice);//listEl[choice];
+                            if (!elChoiceA.classList.contains('inactive')) 
+                                elChoiceA.classList.add('inactive');
+                        }
+                    }
+
+                    let isValid = true;
+                    for(let ik=0;ik<playersChoice[0].choice.length;ik++)
+                    {
+                        if(playersChoice[0].choice[ik] == -1)
+                        {
+                            isValid = false;
+                            break;
+                        }
+                    }
+                    if(isValid)
+                    {
+                        const valEl = document.getElementById("validateAngryChoice");//listEl[choice];
+                        if(valEl)
+                        {
+                            valEl.classList.remove("inactive");
+                        }
+                        
+                    }
+
+                }
+
+            }            
+        }
+        
+        function generateCardAngry(card, card2, card3, currentPlayerIndexValue)
+        {
+            activateGreenSwipe = true;
+            let strCardDesc ="";
+            strCardDesc ="<span class='eye-icon1'>🙈</span><span class='eye-icon'>💢</span><div class='table-container-angry'><table>"                
+                +"<tr><td colspan=6 style='background:"+players[currentPlayerIndexValue].bgColor+"'>"+players[currentPlayerIndexValue].name+" joue : </td></tr>"
+                +"<tr><td colspan=6>"+card.descAlt+"</td></tr>";
+                strCardDesc +=generateButtonChoice(currentPlayerIndexValue, 0);
+            if(card2)
+            {
+                strCardDesc +="<tr><td colspan=6>"+card2.desc+"</td></tr>";
+                strCardDesc +=generateButtonChoice(currentPlayerIndexValue, 1);
+            }
+            if(card3)
+            {
+                strCardDesc +="<tr><td colspan=6>"+card3.desc+"</td></tr>";
+                strCardDesc +=generateButtonChoice(currentPlayerIndexValue, 2);
+            }
+
+            strCardDesc +="<tr><td style='width:10%;'>&nbsp;</td><td colspan=4><div id='validateAngryChoice' class='proposal-button inactive' onclick='validateAngryChoice("+currentPlayerIndexValue+")'>Valider les choix</div></td><td style='width:10%;'>&nbsp;</td></tr>";
+            
+
+            strCardDesc+="</table></div>";
+            return strCardDesc;
+        }
+
+
+
+
+        function generateAngryResult()
+        {
+            multipleScoreAdd = [];
+            let strCardDesc ="";
+            strCardDesc ="<span class='eye-icon1'>💡</span><span class='eye-icon'>💢</span><div class='table-container-angry' style='overflow-y:scroll;'><table>"                
+                +"<tr><td >Résultat : </td></tr>"
+                +"<tr><td >"+currentCardObject.descAlt+"</td></tr>";
+                strCardDesc +=generateAngryResultChoice(0);
+            if(currentCardObject.dataCardExt && currentCardObject.dataCardExt.length>0)
+            {
+                strCardDesc +="<tr><td>"+currentCardObject.dataCardExt[0].desc+"</td></tr>";
+                strCardDesc +=generateAngryResultChoice(1);
+            }
+            if(currentCardObject.dataCardExt && currentCardObject.dataCardExt.length>1)
+            {
+                strCardDesc +="<tr><td>"+currentCardObject.dataCardExt[1].desc+"</td></tr>";
+                strCardDesc +=generateAngryResultChoice(2);
+            }
+            strCardDesc+="</table></div>";
+
+            return strCardDesc;
+
+        }
+        function multipleScoreAddCheck(playerId, score)
+        {            
+            const multipleScoreAddSearch = multipleScoreAdd.filter(p => p.playerId == playerId);
+            if(multipleScoreAddSearch.length==0)
+                multipleScoreAdd.push({playerId:playerId, score:score});
+            else
+                multipleScoreAddSearch[0].score += score;
+        }
+
+        function generateAngryResultChoice(nbIndCard)
+        {
+            const valueGainsPoint = "<font color='green'>+"+currentPointAdded+"</font>";
+            let valueMissPoint = "";
+            if(difficultyModeOn)
+            {
+                valueMissPoint = "<font color='red'>-"+currentPointAdded+"</font>";
+            }
+
+            const currPlay = players[currentPlayerIndex];
+                
+            let playersChoice = currentCardObject.playerChoice.filter(p => p.playerIndex == currentPlayerIndex);
+            const playerCurr = players[currentPlayerIndex];
+            let strDisplay = `<tr><td style=:'display: flex;flex-flow: row wrap;'>
+                        <div>${(playerCurr)?playerCurr.name:"Non définit"} : ${getSymbolAngryChoice(playersChoice[0].choice[nbIndCard])} `;
+            let nbPeopleLoose =0;
+            let strDisplayOther = ""; 
+            let playersChoiceOthers = currentCardObject.playerChoice.filter(p => p.playerIndex != currentPlayerIndex);
+            playersChoiceOthers.forEach(element => {
+                const playerOtherCurr = players[element.playerIndex];
+                strDisplayOther+=`<div>${(playerOtherCurr)?playerOtherCurr.name:"Non définit"} : ${getSymbolAngryChoice(element.choice[nbIndCard])} `
+                if(playersChoice[0].choice[nbIndCard] == element.choice[nbIndCard])
+                {
+                    strDisplayOther+=valueGainsPoint;
+                    if(playerOtherCurr)
+                    {
+                        multipleScoreAddCheck(playerOtherCurr.id, currentPointAdded);
+                    }
+                        
+                }
+                else
+                {
+                    nbPeopleLoose++;
+                    strDisplayOther+=valueMissPoint;
+                    if(difficultyModeOn && playerOtherCurr)
+                    {                        
+                        multipleScoreAddCheck(playerOtherCurr.id, -currentPointAdded);
+                    }
+
+                }
+                strDisplayOther+=`</div>`;    
+
+            });
+            // calcul des points
+
+            if(nbPeopleLoose == playersChoiceOthers.length)
+            {
+                strDisplay+="<font color='green'>+"+(currentPointAdded*nbPeopleLoose)+"</font>";
+                multipleScoreAddCheck(playerCurr.id, (currentPointAdded*nbPeopleLoose));
+            }
+            strDisplay+=`</div>`;
+            strDisplay+=strDisplayOther+`</td>    </tr>`;
+
+
+            return strDisplay
+        }
+        function getSymbolAngryChoice(nbChoice)
+        {
+            let symbol="";
+            switch (nbChoice)
+            {
+                case 0:
+                    symbol = "🫶";
+                    break;
+                case 1:
+                    symbol = "🖕";
+                    break;
+                case 2:
+                    symbol = "🚔";
+                    break;
+                case 3:
+                    symbol = "☠️";
+                    break;
+
+            }
+            return symbol;
+        }
+        function generateButtonChoice(playerInd, currCardInd)
+        {
+            return `<tr><td style='width:10%;'>&nbsp;</td>
+                    <td><div id='angryChoice${currCardInd}0' class='ttdtc-button' onclick='savePlayerChoiceAngryThing(${playerInd},${currCardInd},0)'>${getSymbolAngryChoice(0)}</div></td>
+                    <td><div id='angryChoice${currCardInd}1' class='ttdtc-button' onclick='savePlayerChoiceAngryThing(${playerInd},${currCardInd},1)'>${getSymbolAngryChoice(1)}</div></td>
+                    <td><div id='angryChoice${currCardInd}2' class='ttdtc-button' onclick='savePlayerChoiceAngryThing(${playerInd},${currCardInd},2)'>${getSymbolAngryChoice(2)}</div></td>
+                    <td><div id='angryChoice${currCardInd}3' class='ttdtc-button' onclick='savePlayerChoiceAngryThing(${playerInd},${currCardInd},3)'>${getSymbolAngryChoice(3)}</div></td>
+                    <td style='width:10%;'>&nbsp;</td>    </tr>`;
+        }
+        //////////////////////////////////////////////////////////////////////
         function getRandomCardByTypes(cards, typesTmp) {
 
             let types = typesTmp;
@@ -1315,6 +1672,7 @@
 
             // Sélectionner un index au hasard parmi les cartes filtrées
             const randomIndex = filteredIndices[Math.floor(Math.random() * filteredIndices.length)];
+            filteredIndices.splice(filteredIndices.indexOf(randomIndex),1);
 
             // Retirer la carte du tableau et la retourner
             let card = cards.splice(randomIndex, 1)[0];
@@ -1326,7 +1684,44 @@
             currCardBgcol = filteredspecialTypeActive[0].bgColor;
 
             //console.log(activeMotdice, card.type);
-            if (card.type == 15) // association limite
+            if (card.type == 16 && filteredIndices.length>2) // ca m'énerve
+            {
+                let card2, card3;
+                // j1                
+                card.dataCardExt=[];
+
+                if(filteredIndices.length>0)
+                {
+                    const randomIndex2 = filteredIndices[Math.floor(Math.random() * filteredIndices.length)];
+                    filteredIndices.splice(filteredIndices.indexOf(randomIndex2),1);
+                    card2 = cards.splice(randomIndex2, 1)[0];
+                    card.dataCardExt.push(card2);
+                }
+                
+                if(filteredIndices.length>0)
+                {
+                    const randomIndex3 = filteredIndices[Math.floor(Math.random() * filteredIndices.length)];
+                    filteredIndices.splice(filteredIndices.indexOf(randomIndex3),1);
+                    card3 = cards.splice(randomIndex3, 1)[0];
+                    card.dataCardExt.push(card3);
+                }
+                card.descAlt = card.desc;
+                card.desc = generateCardAngry(card, card2, card3, currentPlayerIndex);
+                card.playerToPlayId = [];
+                card.previousPlayerToPlayId = -1;
+                for(let ig = 0 ;ig< players.length;ig++)
+                {
+                    if(currentPlayerIndex != ig)
+                    {
+                        card.playerToPlayId.push(players[ig].id);
+                    }
+                }
+                desactivateSwipte = true;
+
+
+
+            }
+            else if (card.type == 15) // association limite
             {
                 
                 const filteredIndices2 = cards
@@ -1618,8 +2013,11 @@
 
         // Afficher la carte suivante
         function displayNextCard() {
+            // init
             isFront = true;
             desactivateSwipte = false;
+            activateGreenSwipe = false;
+            multipleScoreAdd = [];
             flipButton.style.visibility = "visible";
 
 
@@ -1790,9 +2188,9 @@
                     fontSize > 12 // taille minimale pour la lisibilité
                 ) {
                     fontSize -= 1;
-                    console.log((cardText.scrollWidth+widthForceCheckValue) + " >-- " + (cardWidth * witdthPercentValue))
-                    console.log((cardText.scrollHeight + heightForceCheckValue)+ " ---> " +(cardHeight * heightPercentValue))
-                    console.log(fontSize)
+                    //console.log((cardText.scrollWidth+widthForceCheckValue) + " >-- " + (cardWidth * witdthPercentValue))
+                    //console.log((cardText.scrollHeight + heightForceCheckValue)+ " ---> " +(cardHeight * heightPercentValue))
+                    //console.log(fontSize)
                     cardText.style.fontSize = `${fontSize}px`;
                     if((cardText.scrollHeight + heightForceCheckValue) <= (cardHeight * heightPercentValue)
                         && prevscrollWidth == cardText.scrollWidth + widthForceCheckValue)
@@ -1916,7 +2314,7 @@
         function swipeRight() {
 
             if (currentCardObject) {
-                if (desactivateSwipte) return;
+                if (desactivateSwipte && !activateGreenSwipe) return;
                 const card = document.getElementById('current-card');
                 card.classList.add('swipe-right');
                 // Ajouter 1 point
@@ -1927,8 +2325,21 @@
         function handleSwipe(points) {
             //if(desactivateSwipte) return;
             // Ajouter les points au joueur actuel
-            players[currentPlayerIndex].score += points;
+            console.log(multipleScoreAdd);
+            if(multipleScoreAdd.length>0)
+            {
+                (multipleScoreAdd).forEach(element => {
+                    
+                    const playerValue = players.filter(p => p.id == element.playerId);
 
+                    if(playerValue && playerValue.length>0)
+                        playerValue[0].score += element.score;
+                });
+            }
+            else
+            {
+                players[currentPlayerIndex].score += points;
+            }
             // Arrêter le timer
             clearInterval(timer);
 

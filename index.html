@@ -106,7 +106,7 @@
             justify-content: center;
             align-items: stretch;
             transition: transform 0.2s ease;
-            padding: 20px;
+            padding: 0px;
             user-select: none;
             touch-action: none;
             margin: 0 auto;
@@ -118,21 +118,38 @@
 
             width: 100%;
             height: 100%;
-            overflow: hidden;
+            flex: 1; /* Utilisation de flex pour occuper l'espace disponible */
+            /*overflow: auto;*/
             display: flex;
             /* On utilise flex pour répartir la hauteur facilement */
             flex-direction: column;
             /* Le contenu s’empile verticalement */
             backface-visibility: hidden;
+            position: absolute;
+        }
+
+        .card-content {
+            z-index: 2; /* Cela garantit que le recto soit toujours au-dessus par défaut */
+            overflow: auto;  /* Pour permettre le défilement */
         }
 
         .card-content-back {
-            position: absolute;
+            overflow: auto;  /* Pour permettre le défilement */
             transform: rotateY(180deg);
+            z-index: 1; /* Cela assure que l'arrière soit derrière le recto */
         }
 
         .flipped {
             transform: rotateY(180deg);
+        }
+        
+                
+        .flipped .card-content {
+            z-index: 1; /* Lorsque la carte est retournée, le recto est derrière */
+        }
+
+        .flipped .card-content-back {
+            z-index: 2; /* Lorsque la carte est retournée, l'arrière est devant */
         }
 
         .card-text {
@@ -147,11 +164,11 @@
             /* Pour permettre de gérer la hauteur des sections internes */
             flex-direction: column;
         }
-
+/*
         .front {
             width: 100%;
             height: 100%;
-        }
+        }*/
 
         /*     
         .card.flipped .card-content {
@@ -408,7 +425,6 @@
         }​
 
         /* --- Div qui remplace le bouton --- */
-        .proposal-button, 
         .proposal-button1 {
             width: 100%;
             height: 100%;
@@ -422,7 +438,22 @@
             margin: 0 auto;
             color: white;
             font-weight: bold;
-            padding:5px;
+            padding:5px;            
+        }
+        .proposal-button {
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            border-radius: 2%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 0 auto;
+            color: white;
+            font-weight: bold;
+            padding:5px;            
         }
         .proposal-button1 {
             background-color: #8eb237;
@@ -449,6 +480,22 @@
             background-color: #8e9499;
         }
 
+        .proposal-button1.active 
+        {
+            background-color: #b44e1f;
+        }
+        .proposal-button.active 
+        {
+            background-color: #b44e1f;
+        }
+        .proposal-button1.active:hover
+        {
+            background-color: #91401b;
+        }
+        .proposal-button.active:hover
+        {
+            background-color: #91401b;
+        }
 
         .add-player-button:hover {
             background-color: #1b669b;
@@ -616,6 +663,54 @@
             }
 
         }
+        .imgContainer {
+        width: auto;       /* ou ce que tu veux */
+        height: auto;      /* ou auto */
+        overflow: hidden;
+        }
+
+        .imgContainer img {
+        width: 100%;
+        height: auto;
+        display: block;
+        }
+        .imgContainerTd {
+        
+            display: flex;
+            justify-content: center;   /* Centre horizontalement */
+            align-items: center;       /* Centre verticalement */
+            height: 100%;              /* Prend toute la hauteur disponible du <td> */
+            width: 100%;
+        }
+        .imgContainerTd img {
+            max-height: 600px;          /* Ne pas dépasser la hauteur du <td> */
+            max-width: 100%;           /* Ne pas dépasser la largeur du <td> */
+            height: auto;              /* Garde les proportions */
+            width: auto;               /* Garde les proportions */
+            object-fit: contain; 
+        }
+
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            cursor: zoom-out;
+            }
+
+            .image-modal img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            box-shadow: 0 0 20px rgba(255,255,255,0.3);
+            border-radius: 10px;
+            }
 
         @media (max-width: 480px) {
             .card-text {
@@ -638,6 +733,9 @@
 
             .title {
                 font-size: 18px;
+            }
+            .imgContainerTd img {
+                max-height: 400px;
             }
 
         }
@@ -768,6 +866,9 @@
             border: none;
             transition: background 0.3s;
         }
+        .tdHidded{
+            visibility:none;
+        }
 
         .accordion-title:hover {
             background-color: #1b669b;
@@ -812,6 +913,22 @@
             /* Ajuste la taille de l'icône */
             cursor: pointer;
         }
+        .table-carrot{
+            border:0px white solid;
+
+        }
+        .td-num {
+            width:10%;
+            text-align: center; 
+            vertical-align: middle;   
+            border-bottom:2px white solid;  
+        }
+        .td-carrot-desc {
+            width:90%;
+            text-align: left; 
+            vertical-align: middle;   
+            border-bottom:2px white solid;             
+        }
 
         .eye-icon1 {
             position: absolute;
@@ -820,36 +937,6 @@
             font-size: 24px;
             /* Ajuste la taille de l'icône */
             cursor: pointer;
-        }
-
-        .back-card-circle {
-            width: 20%;
-            height: 50%;
-            border: 5px solid black;
-            /* Création du cercle creux */
-            border-radius: 50%;
-            position: absolute;
-            z-index: 1;
-            /* Placer derrière le texte */
-        }
-
-        .back-card-text {
-
-            /*transform: rotate(-45deg); */
-            top: 50px;
-            white-space: nowrap;
-            z-index: 2;
-            /* Placer le texte au-dessus du cercle */
-        }
-
-        .back-card-container {
-
-            width: 100%;
-            height: auto;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
     </style>
     <script src="carddata1.js"></script>
@@ -868,6 +955,11 @@
     <script src="carddata14.js"></script>
     <script src="carddata15.js"></script>
     <script src="carddata16.js"></script>
+    <script src="carddata17.js"></script>
+    <script src="carddata18.js"></script>
+    <script src="carddata19.js"></script>
+    <script src="carddata20.js"></script>
+    <script src="carddata21.js"></script>
 </head>
 
 <body>
@@ -881,7 +973,7 @@
         <div class="timer-container">
             
             <div class="current-score-div">
-                <span onclick="infoPanelOpen()">ℹ️</span>
+                <span onclick="infoPanelOpen()" style="cursor:pointer">ℹ️</span>
                 <button class='minus-score-player' onclick="addCurrentScore(-1)">-</button>
                 <span id="currentScoreToAdd"></span>
                 <button class='add-score-player' onclick="addCurrentScore(1)">+</button>
@@ -924,15 +1016,13 @@
             <button type="submit" class="add-player-button">Set</button>
             <button type="button" class="add-player-button" id="reset-timer-button">Reset</button>
         </form>
+        
         <div id="SelctZone">
-            <select id="lstCardType" class="add-player-select" onchange="changeCardType()">
+            <select id="lstTemplateType" class="add-player-select" onchange="changeTemplateType()">
 
             </select>
         </div>
         </br>
-        <div id="CardTypeConfig">
-
-        </div>
         <div class="accordion">
             <div class="accordion-title" onclick="toggleAccordion()">Activer type de cartes</div>
             <div class="accordion-content">
@@ -941,10 +1031,15 @@
             </div>
         </div>
         </br>
+        
         <div id="SelctZone">
-            <select id="lstTemplateType" class="add-player-select" onchange="changeTemplateType()">
+            <select id="lstCardType" class="add-player-select" onchange="changeCardType()">
 
             </select>
+        </div>
+        </br>
+        <div id="CardTypeConfig">
+
         </div>
         </br>
         <button type="button" class="add-difficulty-mode-button-off" id="difficulty-mode-button">Mode difficile :
@@ -955,7 +1050,8 @@
         </br>
         <button type="button" class="add-player-button" id="reload-button">Reload card</button>
         </br>
-        <h2 class="panel-title2">v1.3</h2>
+        </br>
+        <h2 id="creditDiv" class="panel-title2"></h2>
     </div>
     <div class="info-panel" id="info-panel">
         
@@ -965,8 +1061,7 @@
 
         </div>
         
-        <div id="infosRules">
-              
+        <div id="infosRules">              
         </div>
         
 
@@ -975,6 +1070,9 @@
 
     <div class="overlay" id="overlay"></div>
 
+    <div id="image-modal" class="image-modal">
+        <img id="image-modal-img" src="" />
+    </div>
     <script>
 
 
@@ -994,6 +1092,11 @@
         { id: 14, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
         { id: 15, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
         { id: 16, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 17, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 18, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 19, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 20, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 21, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
         ];
 
 
@@ -1002,20 +1105,25 @@
         const specialType = [
         { id: 1, typeName: "Règles", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#AECAF4", icon: "☑️", "rules":"Les cartes Règles modifient temporairement les règles du jeu. Elles peuvent s’appliquer à la carte suivante. Dans ce cas, le même joueur rejoue (n’oubliez pas de remettre ce joueur en cours pour le calcul des scores). Il peut gagner ou perdre un point bonus selon qu’il respecte ou non la règle." },
         { id: 2, typeName: "Mime", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#d5b0c5", icon: "🙆‍♂️", "rules":"Le joueur doit mimer ce qui est décrit sur la carte, en essayant d’être soit le plus ressemblant… soit le plus drôle !" },
-        { id: 3, typeName: "Dilèmme", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#b6f7ec", icon: "🫸🏻", "rules":"Vous aimez les débats ? Répondez à ce dilemme en respectant la consigne suivante : défendez l'une ou l'autre partie avec vos propres arguments, en faisant preuve d’imagination ! Vous débattez contre les autres joueurs ou contre un joueur désigné sur la carte. Le consensus général déterminera qui remporte le point. Si vous débattez contre plusieurs joueurs (trois ou plus) et que la majorité l’emporte, aucun point n’est attribué, ni à vous ni aux autres." },
+        { id: 3, typeName: "Débat", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#b6f7ec", icon: "🫸🏻", "rules":"Vous aimez les débats ? Répondez à ce débat en respectant la consigne suivante : défendez l'une ou l'autre partie avec vos propres arguments, en faisant preuve d’imagination ! Vous débattez contre les autres joueurs ou contre un joueur désigné sur la carte. Le consensus général déterminera qui remporte le point. Si vous débattez contre plusieurs joueurs (trois ou plus) et que la majorité l’emporte, aucun point n’est attribué, ni à vous ni aux autres." },
         { id: 4, typeName: "Défis", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#C5B0D5", icon: "🥏", "rules":"Le joueur doit relever le défi indiqué sur la carte. Le consensus du groupe détermine si le défi est réussi ou non." },
         { id: 5, typeName: "Vérité", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#FFBB78", icon: "🤞🏿", "rules":"Le joueur doit répondre à la question en toute sincérité, sans mentir." },
         { id: 6, typeName: "Quizz", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#98DF8A", icon: "💊", icon2: "💡", "rules":"Répondez à la question posée. Vous pouvez vérifier la bonne réponse sur Internet." },
         { id: 7, typeName: "Action collective", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#d5d4b0", icon: "👨‍👩‍👧‍👦", "rules":"Tous les joueurs doivent coopérer pour reproduire ce qui est décrit sur la carte. Si c’est réussi, chaque joueur gagne 1 point." },
         { id: 8, typeName: "Roleplay", active: true, timer: 60, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#DBDB8D", icon: "🕵️", "rules":"Le joueur doit rejouer la scène décrite sur la carte aussi fidèlement que possible. Si un autre joueur est impliqué, cela sera précisé sur la carte. Si le groupe valide la performance, les deux joueurs gagnent 1 point." },
         { id: 9, typeName: "Classement", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#9EDAE5", icon: "🔢", "rules":"Le joueur doit classer les éléments de la carte dans le bon ordre. Le classement est validé (ou non) par le consensus du groupe." },
-        { id: 10, typeName: "TTDTC", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#8e95c1", icon: "🌍", icon2: "💡", "rules":"Choisis ton niveau selon le thème proposé (clique sur un chiffre de 1 à 10 : 1 étant \"niveau nul\", 10 \"niveau incollable\"). Une question apparaîtra selon ton niveau. Retourne la carte pour voir la réponse." },
+        { id: 10, typeName: "TTDTC", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#8e95c1", icon: "🌍", icon2: "💡", "rules":"Choisis ton niveau selon le thème proposé (clique sur un chiffre de 1 à 10 : 1 étant \"niveau nul\", 10 \"niveau incollable\"). Une question apparaîtra selon ton niveau. Retourne la carte pour voir la réponse.</br>Les réponses sont non exhaustive (donc à vérifier!)." },
         { id: 11, typeName: "JuduFion", active: true, timer: 8, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#C49C94", icon: "🔞", "rules":"Réponds à une question politiquement incorrecte dans un temps limité. Vitesse et réactivité sont clés ! Fonctionne très bien avec les cartes Règles." },
         { id: 12, typeName: "Ta Reum", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#BCBD22", icon: "👓", icon2: "💡", "rules":"Un joueur adverse lit secrètement le dos de la carte, qui décrit un personnage et une situation. Le joueur principal doit les deviner en posant des questions auxquelles l’adversaire ne peut répondre que par \"oui\" ou \"non\" (sans tricher !). S’il devine les deux avant la fin du compte à rebours, il marque 1 point." },
         { id: 13, typeName: "Bac", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#82e0aa", icon: "🅱️", "rules":"Le joueur doit trouver un mot commençant par la lettre définie dans le thème annoncé. Pas le droit d’inventer un mot ! C’est un \"bac\" classique." },
         { id: 14, typeName: "Mot dice", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#f9e79f", icon: "🐈‍⬛", "rules":"Sans montrer la carte aux autres, le joueur actif la retourne et découvre plusieurs mots, chacun avec un nombre d’indices autorisés. Il choisit un mot et fait deviner ce mot aux autres, indice par indice.<ul><li>Plus il donne d’indices, plus il marque de points (1 point par indice donné), à condition qu’un autre joueur devine le mot à la fin (ce dernier gagne aussi 1 point).</li><li>Si un joueur adverse devine le mot avant que tous les indices soient donnés, il gagne le nombre d’indices restants en points. Le joueur actif gagne alors le nombre de points correspondant aux indices déjà donnés.</li><li>Si le joueur actif donne un indice volontairement hors sujet pour rendre le jeu plus difficile, il est pénalisé : il devra donner autant d’indices supplémentaires que le nombre initial prévu !</li></ul>" },
         { id: 15, typeName: "Association limite", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#b98bd6", icon: "🌶️", "rules":"Le joueur actif lit une phrase à trou. Un joueur adverse désigné regarde secrètement le verso de la carte avec plusieurs propositions. Il en choisit une et clique dessus. La proposition choisie est ensuite mélangée à d'autres aléatoires. Le joueur actif doit alors deviner la bonne réponse.<ul><li>Si la réponse est correcte, elle s’affiche en vert.</li><li>Sinon, elle s’affiche en rouge.</br><b>Variante Participative</b></br>Dans cette variante, tous les joueurs participent activement. Tous les joueurs ouvrent le jeu et désactivent toutes les options, sauf « Association Limite », afin d’accéder directement aux propositions (sans voir la question). Le joueur actif lit sa question, et les autres répondent en sélectionnant l'une de leurs propositions. Le joueur actif choisit la réponse la plus drôle, et le joueur qui l’a proposée gagne un point.</li></ul>" },
         { id: 16, typeName: "Ca m'éneve", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#d1a568", icon: "💢", "rules":"Un jeu pour juger ceux qui t’énervent… sur 4 niveaux !</br>🫶 : Ça ne me dérange pas trop</br>🖕 : Juste un doigt</br>🚔 : Direct en prison</br>☠️ : Ça mérite la mort</br></br>Le joueur principal découvre une série d’énoncés et attribue secrètement à chacun d’eux un niveau de jugement selon son humeur du moment.</br></br>Ensuite, chaque joueur, à tour de rôle, sélectionne en secret le niveau qu’il attribuerait à chaque énoncé (le joueur concerné est indiqué en haut de l’écran).</br></br>Une fois que tout le monde a joué, les résultats sont révélés :<ul><li>Chaque joueur qui a deviné le même jugement que le joueur principal gagne 1 point.</li><li>Si personne ne trouve la réponse du joueur principal, ce dernier marque un nombre de points égal au nombre de joueurs.</li></ul>" },
+        { id: 17, typeName: "Dilèmme", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#8fd0c0", icon: "👍", "rules":"Le but est de déterminer si les autres joueurs partagent l’avis du joueur principal.</br>Le joueur principal lit une carte dilemme et choisit secrètement l’aspect positif qu’il préfère. Il le montre ensuite aux autres joueurs.</br>On retourne alors la carte ↺. Un autre joueur, désigné par la carte, choisit à son tour l’aspect négatif du dilemme, en ayant connaissance du choix positif du joueur principal. Il retourne ensuite la carte ↺.</br>Le dilemme complet (positif + négatif) est alors révélé. À trois, tous les joueurs donnent leur avis en levant le pouce 👍 ou 👎.</br>Les joueurs qui ont le même avis que le joueur principal marquent un point. Si aucun joueur ne partage l’avis du joueur principal, ce dernier gagne autant de points qu’il y a de joueurs." },
+        { id: 18, typeName: "Sent Critique", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#c8d3db", icon: "🎬", "rules":"Saurez-vous deviner l'œuvre derrière cette critique ?" },
+        { id: 19, typeName: "I love carrot", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#b5e5a1", icon: "🥕", "rules":"Le joueur principal s’éloigne pendant que les autres joueurs choisissent une affirmation parmi six propositions.</br>Ils doivent ensuite répondre sincèrement par \"oui\" ou \"non\" au verso de la carte.</br>Vous pouvez retourner la carte à tout moment pour relire l’affirmation choisie.</br>Une fois que tous les joueurs ont répondu, le joueur principal revient et doit deviner, en se basant sur les réponses des autres, quelle affirmation a été sélectionnée.</br>Il a droit à trois essais maximum :</br>S’il trouve dès le premier essai, il marque 3 points.</br>À chaque mauvaise tentative, il perd 1 point.</br>Le nombre de points obtenus est indiqué en haut de la carte, et doit être validé en cochant <font color='#26de81'>✓</font>." },
+        { id: 20, typeName: "Jeu d'alcool", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#b5e5a1", icon: "🍺", "rules":"Répond au défis." },
+        { id: 21, typeName: "Now your Meme", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#d3a9a9", icon: "😂", "rules":"Un MEME apparaît, et au verso, les autres joueurs doivent choisir quel serait le meilleur libellé pour ce mème. La carte est ensuite retournée, et le joueur principal doit deviner quel libellé ont choisi les autres joueurs.<br><b>Non compatible en PWA</b>" },
 
         ];
 
@@ -1042,9 +1150,14 @@
         cards = cards.concat(carddata14);
         cards = cards.concat(carddata15);
         cards = cards.concat(carddata16);
+        cards = cards.concat(carddata17);
+        cards = cards.concat(carddata18);
+        cards = cards.concat(carddata19);
+        cards = cards.concat(carddata20);
+        cards = cards.concat(carddata21);
 
         //#endregion cards
-        console.log(cards.length);
+        //console.log(cards.length);
         function initRules() {
             specialType.forEach(element => {                
                 infosRules.innerHTML +="<h2 id='infoType"+element.id+"'>"+element.icon+" "+element.typeName+"</h2>";
@@ -1060,6 +1173,12 @@
             specialTypeDiv.innerHTML = '';
             lstCardType.innerHTML += `<option value="0">Config type de cartes</option>`;
             lstTemplateType.innerHTML += `<option value="0">Template de jeu (aucun)</option>`;
+            
+            specialTypeDiv.innerHTML += `
+                    <input type="checkbox" class="sc-gJwTLC ikxBAC" id="speTypeAll" checked onclick="activateSpecial(-1, this)"><label for="speTypeAll"> Tous</label>
+                    </br>
+                `;
+            
             (specialType).forEach(element => {
 
                 lstCardType.innerHTML += `<option value="${element.id}">${element.icon} ${element.typeName}</option>`;
@@ -1095,7 +1214,7 @@
                 .then(([cardsData]) => {
                     cards = cardsData;
                     console.log("Tous les fichiers JSON ont été chargés !");
-                    console.log("Cards:", cards);
+                    //console.log("Cards:", cards.length);
 
                     // Lancer la suite du programme ici
                     init();
@@ -1112,15 +1231,54 @@
         let currentCardObject;
         let isFront = true;
         let soundModeOn = false;
-        //console.log(cards);
+        //console.log(cards.length);
         let remainingCards = [...cards];
         const iconList = getIconsType();
 
-        const defaultCardBack = "<div class='back-card-container'>'<div class='back-card-circle'></div><div class='back-card-text'>Texte en biais</div></div>"
-
         let players = [
             { id: 1, name: "Joueur 1", score: 0, bgColor: generateReadableColor() },
-            { id: 2, name: "Joueur 2", score: 0, bgColor: generateReadableColor() }
+            { id: 2, name: "Joueur 2", score: 0, bgColor: generateReadableColor() },/*
+            { id: 3, name: "Joueur 3", score: 0, bgColor: generateReadableColor() },
+            { id: 4, name: "Joueur 4", score: 0, bgColor: generateReadableColor() },
+            { id: 5, name: "Joueur 5", score: 0, bgColor: generateReadableColor() },
+            { id: 6, name: "Joueur 6", score: 0, bgColor: generateReadableColor() },
+            { id: 7, name: "Joueur 7", score: 0, bgColor: generateReadableColor() },
+            { id: 8, name: "Joueur 8", score: 0, bgColor: generateReadableColor() },
+            { id: 9, name: "Joueur 9", score: 0, bgColor: generateReadableColor() },
+            { id: 10, name: "Joueur 10", score: 0, bgColor: generateReadableColor() },
+            { id: 11, name: "Joueur 11", score: 0, bgColor: generateReadableColor() },
+            { id: 12, name: "Joueur 12", score: 0, bgColor: generateReadableColor() },
+            { id: 13, name: "Joueur 13", score: 0, bgColor: generateReadableColor() },
+            { id: 14, name: "Joueur 14", score: 0, bgColor: generateReadableColor() },
+            { id: 15, name: "Joueur 15", score: 0, bgColor: generateReadableColor() },
+            { id: 16, name: "Joueur 16", score: 0, bgColor: generateReadableColor() },
+            { id: 17, name: "Joueur 17", score: 0, bgColor: generateReadableColor() },
+            { id: 18, name: "Joueur 18", score: 0, bgColor: generateReadableColor() },
+            { id: 19, name: "Joueur 19", score: 0, bgColor: generateReadableColor() },
+            { id: 20, name: "Joueur 20", score: 0, bgColor: generateReadableColor() },
+            { id: 21, name: "Joueur 21", score: 0, bgColor: generateReadableColor() },
+            { id: 22, name: "Joueur 22", score: 0, bgColor: generateReadableColor() },
+            { id: 23, name: "Joueur 23", score: 0, bgColor: generateReadableColor() },
+            { id: 24, name: "Joueur 24", score: 0, bgColor: generateReadableColor() },
+            { id: 25, name: "Joueur 25", score: 0, bgColor: generateReadableColor() },
+            { id: 26, name: "Joueur 26", score: 0, bgColor: generateReadableColor() },
+            { id: 27, name: "Joueur 27", score: 0, bgColor: generateReadableColor() },
+            { id: 28, name: "Joueur 28", score: 0, bgColor: generateReadableColor() },
+            { id: 29, name: "Joueur 29", score: 0, bgColor: generateReadableColor() },
+            { id: 30, name: "Joueur 30", score: 0, bgColor: generateReadableColor() },
+            { id: 31, name: "Joueur 31", score: 0, bgColor: generateReadableColor() },
+            { id: 32, name: "Joueur 32", score: 0, bgColor: generateReadableColor() },
+            { id: 33, name: "Joueur 33", score: 0, bgColor: generateReadableColor() },
+            { id: 34, name: "Joueur 34", score: 0, bgColor: generateReadableColor() },
+            { id: 35, name: "Joueur 35", score: 0, bgColor: generateReadableColor() },
+            { id: 36, name: "Joueur 36", score: 0, bgColor: generateReadableColor() },
+            { id: 37, name: "Joueur 37", score: 0, bgColor: generateReadableColor() },
+            { id: 38, name: "Joueur 38", score: 0, bgColor: generateReadableColor() },
+            { id: 39, name: "Joueur 39", score: 0, bgColor: generateReadableColor() },
+            { id: 40, name: "Joueur 40", score: 0, bgColor: generateReadableColor() },
+            { id: 41, name: "Joueur 41", score: 0, bgColor: generateReadableColor() },
+            { id: 42, name: "Joueur 42", score: 0, bgColor: generateReadableColor() },*/
+
         ];
         let multipleScoreAdd = [];
         let currentPlayerIndex = 0;
@@ -1177,13 +1335,17 @@
         const flipButton = document.getElementById('flip-button');
         const currentScoreToAdd = document.getElementById('currentScoreToAdd');
         const infosRules = document.getElementById('infosRules');
+        const modal = document.getElementById("image-modal");
+        const modalImg = document.getElementById("image-modal-img");
         function removeHtmlTags(str) {
             return str.replace(/<[^>]*>/g, '');
         }
-
-
+        function iniCredit()
+        {
+            document.getElementById("creditDiv").innerText="2025 - Créé par Cube - ~"+cards.length+" cartes - v1.5";
+        }
         setTimerInput.value = "";
-
+        iniCredit();
         initRules();
         // Initialisation
         function init() {
@@ -1226,15 +1388,12 @@
 
 
         function GetCard() {
-            //specialType = [{id:1, typeName:"Règles", active:true,timer:30,nbCardCounter:10,nbCardCounterRnd:3, counter:0},
-
-            //const specialType = [{id:1, typeName:"Règles", active:true,timer:30,nbCardCounter:10,nbCardCounterRnd:3, nextCardCounter:-1 ,counter:0, bgColor:"#ebed86"},
+            
             const currCardTypeSelected = [];
-            //console.log(specialType);
             const filteredspecialTypeActive = specialType.filter(p => p.active && p.nbCardCounter != -1);
             currentPointAdded = 1;
             refreshCurrentScore();
-            //console.log(filteredspecialTypeActive);
+
             if (filteredspecialTypeActive.length > 0) {
 
 
@@ -1266,6 +1425,19 @@
             }
             return null;
 
+        }
+
+        function getWeightedRandomItem(array) {
+            const totalWeight = array.reduce((sum, item) => sum + item.weight, 0);
+            const rand = Math.random() * totalWeight;
+
+            let cumulative = 0;
+            for (const item of array) {
+                cumulative += item.weight;
+                if (rand < cumulative) return item;
+            }
+
+            return null; // par sécurité, mais normalement jamais atteint
         }
 
         function getRandomLetter() {
@@ -1331,7 +1503,7 @@
                                
                     let arrResultShuffled = shuffleArray([...arrResult]);
 
-                    console.log(arrResultShuffled)
+                    //console.log(arrResultShuffled)
                     let strResult = "<span class='eye-icon'>🌶️</span><div  class='table-container'><table>";    
                     strResult +="<tr><td>"+currentCardObject.desc+"</td></tr>";
                     for(let ik = 0;ik<arrResultShuffled.length;ik++)
@@ -1543,7 +1715,7 @@
         {
             multipleScoreAdd = [];
             let strCardDesc ="";
-            strCardDesc ="<span class='eye-icon1'>💡</span><span class='eye-icon'>💢</span><div class='table-container-angry' style='overflow-y:scroll;'><table>"                
+            strCardDesc ="<span class='eye-icon1'>💡</span><span class='eye-icon'>💢</span><div class='table-container-angry' style='overflow-y: auto;'><table>"                
                 +"<tr><td >Résultat : </td></tr>"
                 +"<tr><td >"+currentCardObject.descAlt+"</td></tr>";
                 strCardDesc +=generateAngryResultChoice(0);
@@ -1571,6 +1743,21 @@
                 multipleScoreAddSearch[0].score += score;
         }
 
+        function getRandomPlayersExcept(idPlayerExclude)
+        {   
+            let playerFinded;         
+            let filteredPlayer;
+            if(idPlayerExclude>0)
+                filteredPlayer = players.filter(p => p.id != idPlayerExclude);
+            else
+                filteredPlayer = players;
+
+            if(filteredPlayer && filteredPlayer.length>0)
+            {
+                playerFinded = filteredPlayer[Math.floor(Math.random() * filteredPlayer.length)];
+            }
+            return playerFinded;
+        }
         function generateAngryResultChoice(nbIndCard)
         {
             const valueGainsPoint = "<font color='green'>+"+currentPointAdded+"</font>";
@@ -1657,6 +1844,211 @@
                     <td><div id='angryChoice${currCardInd}3' class='ttdtc-button' onclick='savePlayerChoiceAngryThing(${playerInd},${currCardInd},3)'>${getSymbolAngryChoice(3)}</div></td>
                     <td style='width:10%;'>&nbsp;</td>    </tr>`;
         }
+        
+        function displayDilem()
+        {
+
+
+            //console.log(currentCardObject.dilemMalus, currentCardObject.dilemBonus, currentCardObject.dilemMalusSelected, currentCardObject.dilemBonusSelected);
+
+            if(isFront && currentCardObject.dilemBonusSelected != -1)
+            {
+                const currCardDiv = document.getElementById('FrontTextId');
+                if(currCardDiv)
+                {
+                    if(currentCardObject.dilemMalusSelected == -1)
+                    {
+                        currCardDiv.innerHTML = currentCardObject.dilemBonus[currentCardObject.dilemBonusSelected];
+                    }
+                    else
+                    {                        
+                        currCardDiv.innerHTML = 
+                       
+                        "<span class='eye-icon'>👍</span><div style='margin-left: auto;margin-right: auto; font'>👍 ou 👎</div>" +
+                        currentCardObject.dilemBonus[currentCardObject.dilemBonusSelected]
+                        + "</br><font color='red'>MAIS</font>"+
+                        currentCardObject.dilemMalus[currentCardObject.dilemMalusSelected];
+                        desactivateSwipte = false;
+                    }
+                }
+            }
+            else if(!isFront && currentCardObject.dilemMalusSelected != -1)
+            {
+                const currCardDiv = document.getElementById('BackTextId');
+                if(currCardDiv)
+                {
+                    if(currentCardObject.dilemBonusSelected == -1)
+                    {
+                        currCardDiv.innerHTML = currentCardObject.dilemMalus[currentCardObject.dilemMalusSelected];
+                    }
+                    else
+                    {                        
+                        currCardDiv.innerHTML = 
+                        "<span class='eye-icon'>👍</span><div style='margin-left: auto;margin-right: auto'>👍 ou 👎</div>" +
+                        currentCardObject.dilemBonus[currentCardObject.dilemBonusSelected]
+                        + "</br><font color='red'>MAIS</font>"+
+                        currentCardObject.dilemMalus[currentCardObject.dilemMalusSelected];
+                        desactivateSwipte = false;
+                    }
+                }
+            }
+        }
+        function selectDilem(typeDilem, indexDilem)
+        {
+
+
+            let valueDivCard="";
+            if(typeDilem == 1 )//bonus
+            {              
+                currentCardObject.dilemBonusSelected = indexDilem;
+                valueDivCard = "bonusCard";
+            }
+            else
+            {
+                currentCardObject.dilemMalusSelected = indexDilem;
+                valueDivCard = "malusCard";
+            }
+            if(valueDivCard != "")
+            {
+                for(let ik= 1; ik<=3;ik++)
+                {
+                    const bonusCard = document.getElementById(valueDivCard+ik);
+                    if(bonusCard)
+                    {   
+                        if((indexDilem+1) == ik)
+                        {  
+                                if (!bonusCard.classList.contains('active')) 
+                                    bonusCard.classList.add('active');
+                        }
+                        else
+                        {                           
+                                if (bonusCard.classList.contains('active')) 
+                                    bonusCard.classList.remove('active');
+                        }
+                    }
+                    
+                }
+            }
+
+        }
+        
+        function getCritiqueTag(nbCat) {
+            let categori = "";
+            switch(nbCat)
+            {
+                case 1:
+                categori = "🎬 Films / séries";
+                    break;
+                case 2:
+                categori = "🕹️ Jeux vidéo";
+                    break;
+                case 3:
+                categori = "📖 Manga / BD / Comics";
+                    break;
+                case 4:
+                categori = "🎭 Littérature / Théatre";
+                    break;
+
+            }
+            return "<div style='margin-left: auto;margin-right: auto; text-decoration: underline;'>"+categori+"</div>"
+        }
+
+
+
+
+        function updateCarrotChoice(playerId)
+        {
+            let isYes = true;
+            const elPlayerChoice = document.getElementById("carrotChoice"+playerId);
+            if(currentCardObject.carrotPlyerChoice == undefined)
+            {
+                currentCardObject.carrotPlyerChoice = [];
+            }
+            if(currentCardObject.carrotPlyerChoice.length>0)
+            {                        
+                const filteredPlayer = currentCardObject.carrotPlyerChoice.filter(p => p.id == playerId);
+                if(filteredPlayer.length>0)
+                {
+                    filteredPlayer[0].isYes = !filteredPlayer[0].isYes;
+                    isYes = filteredPlayer[0].isYes;
+                    console.log(isYes);
+                }
+            }
+
+            if(isYes)
+            {                        
+                elPlayerChoice.innerHTML = "OUI";
+                elPlayerChoice.classList.remove('add-difficulty-mode-button-off');
+                elPlayerChoice.classList.add('add-difficulty-mode-button-on');
+            }
+            else
+            {
+                
+                elPlayerChoice.innerHTML = "NON";
+                elPlayerChoice.classList.remove('add-difficulty-mode-button-on');
+                elPlayerChoice.classList.add('add-difficulty-mode-button-off');
+            }
+
+        }
+        function resolveRandomChoices(input) {
+            return input.replace(/\[([^\[\]]+?)\]/g, (_, content) => {
+                const options = content.split(';').map(s => s.trim());
+                const choice = options[Math.floor(Math.random() * options.length)];
+                return choice;
+            });
+            }
+
+
+        function zoomImage(img)
+        {
+            modal.style.display = "flex";
+            modalImg.src = img.src;
+        }            
+        function selectMeme(nbDec, currentPlayer)
+        {
+            if(currentPlayer==1) // front
+            {                           
+                const currCardDiv = document.getElementById('FrontTextId');       
+                if(currCardDiv)              
+                {
+                    let colorVal = "green";
+                    if(currentCardObject.currentIndexSelected != nbDec)
+                    {
+                        colorVal = "red";
+                    }
+
+                    const strCardDescTmp1Alt = "<tr><td  style='height:70%; width: 100%;color:"+colorVal+"'>"+currentCardObject.ListDesc[currentCardObject.currentIndexSelected]+"</td></tr>";
+                    currCardDiv.innerHTML = currentCardObject.StrDesc1+strCardDescTmp1Alt+currentCardObject.StrDesc2;
+                    currentCardObject.currentIndexSelectedPlayer = true;
+                }
+            }
+            else
+            {
+                const currCardDiv = document.getElementById('BackTextId');       
+                if(currCardDiv)              
+                {
+                    currentCardObject.currentIndexSelected = nbDec;
+                    const strCardDescTmp1Alt = "<tr><td  style='height:70%; width: 100%;'>"+currentCardObject.ListDesc[nbDec]+"</td></tr>";
+                    currCardDiv.innerHTML = currentCardObject.StrDesc1+strCardDescTmp1Alt+currentCardObject.StrDesc2;
+                }
+            }
+
+        }
+        
+        function disqplayMemeDescAlt()
+        {
+            console.log(currentCardObject.currentIndexSelected,currentCardObject.currentIndexSelectedPlayer);
+
+            if(currentCardObject.currentIndexSelected!=undefined && currentCardObject.currentIndexSelectedPlayer == undefined)
+            {      
+                const currCardDiv = document.getElementById('FrontTextId');       
+                if(currCardDiv)              
+                {
+                    currCardDiv.innerHTML = currentCardObject.descAlt;
+                    adjustFontSize();
+                }
+            }
+        }
         //////////////////////////////////////////////////////////////////////
         function getRandomCardByTypes(cards, typesTmp) {
 
@@ -1672,7 +2064,7 @@
 
             // Filtrer les indices des cartes correspondant à l'un des types donnés
             const filteredIndices = cards
-                .map((card, index) => types.includes(card.type) && (!card.notInclude) ? index : -1)
+                .map((card1, index) => types.includes(card1.type) && (!card1.notInclude) ? index : -1)
                 .filter(index => index !== -1);
 
             if (filteredIndices.length === 0) {
@@ -1682,10 +2074,8 @@
             // Sélectionner un index au hasard parmi les cartes filtrées
             const randomIndex = filteredIndices[Math.floor(Math.random() * filteredIndices.length)];
             filteredIndices.splice(filteredIndices.indexOf(randomIndex),1);
-
             // Retirer la carte du tableau et la retourner
             let card = cards.splice(randomIndex, 1)[0];
-            currentCardObject = card;
 
 
             let filteredspecialTypeActive = specialType.filter(p => p.id == card.type);
@@ -1693,24 +2083,228 @@
             currCardBgcol = filteredspecialTypeActive[0].bgColor;
 
             //console.log(activeMotdice, card.type);
-            if (card.type == 16 && filteredIndices.length>2) // ca m'énerve
+            if(card.type == 21) // Meme
+            { 
+                let strCardDesc = "<div class='imgContainer'><img src='"+card.img+"'/></div>";
+                
+                let card1Meme;
+                const filteredIndicesCarrot1 = cards
+                    .map((card1, index) => card1.type==21 && card1.subType == 2? index : -1)
+                    .filter(index => index !== -1);
+                
+                if (filteredIndicesCarrot1.length >0) {
+                    card1Meme = cards[filteredIndicesCarrot1[Math.floor(Math.random() * filteredIndicesCarrot1.length)]];
+                }
+                
+                let card2Meme;
+                const filteredIndicesCarrot2 = cards
+                    .map((card1, index) => card1.type==21 && card1.subType == 2? index : -1)
+                    .filter(index => index !== -1);
+                
+                if (filteredIndicesCarrot1.length >0) {
+                    card2Meme = cards[filteredIndicesCarrot1[Math.floor(Math.random() * filteredIndicesCarrot1.length)]];
+                }
+                
+                let card3Meme;
+                const filteredIndicesCarrot3 = cards
+                    .map((card1, index) => card1.type==21 && card1.subType == 2? index : -1)
+                    .filter(index => index !== -1);
+                
+                if (filteredIndicesCarrot1.length >0) {
+                    card3Meme = cards[filteredIndicesCarrot1[Math.floor(Math.random() * filteredIndicesCarrot1.length)]];
+                }
+
+                for(let ik=0;ik<2; ik++)
+                {
+                    let strCardDescTmp ="";
+                    let classHidded = "";
+                    let clickEvent = "";
+                    let propodsalButton = "";
+
+
+                    
+                    if(ik==0)
+                    {
+                        classHidded="class='tdHidded' ";
+                        clickEvent = 1;
+                    }
+                    else
+                    {
+                        clickEvent = 0;
+                        strCardDescTmp +="<span class='eye-icon1'>🙈</span>";
+                        propodsalButton="1";
+                    }
+
+
+                    
+                    strCardDescTmp +="<div ><table class='table-carrot'>";
+                        strCardDescTmp +="<tr><td class='imgContainerTd' id='imgcontain' style='height:30%; width: 100%;'><img src='"+card.img+"' onclick='zoomImage(this)'/></div></td></tr>";
+
+                    let strCardDescTmp1 = "";
+
+                    if(card1Meme)
+                    strCardDescTmp1 +="<tr><td  style='height:23%; width: 100%;'><div class='proposal-button"+propodsalButton+"' style='color:white;padding:10px;font-weight: normal;' onclick='selectMeme(0,"+clickEvent+")'>"+card1Meme.desc+"</div></td></tr>";
+                    
+                    if(card2Meme)
+                        strCardDescTmp1 +="<tr><td  style='height:23%; width: 100%;'><div class='proposal-button"+propodsalButton+"' style='color:white;padding:10px;font-weight: normal;' onclick='selectMeme(1,"+clickEvent+")'>"+card2Meme.desc+"</div></td></tr>";
+
+                    if(card3Meme)
+                        strCardDescTmp1 +="<tr><td style='height:23%; width: 100%;'><div class='proposal-button"+propodsalButton+"' style='color:white;padding:10px;font-weight: normal;' onclick='selectMeme(2,"+clickEvent+")'>"+card3Meme.desc+"</div></td></tr>";
+                    
+                    
+
+                    let strCardDescTmp2="</table></div>";
+
+                    
+                    card.StrDesc1 = strCardDescTmp;
+                    card.StrDesc2 = strCardDescTmp2;
+                    card.ListDesc = [];
+                    card.ListDesc.push(card1Meme.desc);
+                    card.ListDesc.push(card2Meme.desc);
+                    card.ListDesc.push(card3Meme.desc);
+                    if(ik==0)
+                    {
+                        const strCardDescTmp1Alt = "<tr><td id='descTd' style='height:70%; width: 100%;'>Laisse les autres joueurs choisir une descriptions de ce Meme au verso et revient ensuite ici.</td></tr>";
+                        card.desc = strCardDescTmp+strCardDescTmp1Alt+strCardDescTmp2;
+                        card.descAlt = strCardDescTmp+strCardDescTmp1+strCardDescTmp2;
+                    }
+                    else
+                    {
+                        card.verso = strCardDescTmp+strCardDescTmp1+strCardDescTmp2;
+                    }
+                }
+
+                
+
+                activateGreenSwipe = true;
+                desactivateSwipte = true;
+
+            }
+            if(card.type == 20) // jeu d'alcool
+            {                
+                const csq = [{desc:"boit 🍺",weight:10},{desc:"boit 🍺🍺",weight:5},{desc:"boit 🍺🍺🍺",weight:2},
+                            {desc:"distribue 🍺",weight:10},{desc:"distribue 🍺🍺",weight:5},{desc:"distribue 🍺🍺🍺",weight:2},
+                            {desc:"gagne 1 point",weight:10},{desc:"gagne 2 points",weight:5},{desc:"gagne 2 points",weight:2},
+                            {desc:"perd 1 point",weight:10},{desc:"perd 2 points",weight:5},{desc:"perd 2 points",weight:2},
+                            {desc:"ne bois plus pendant 1 tours",weight:9},{desc:"ne bois plus pendant 2 tours",weight:5},{desc:"ne bois plus pendant 2 tours",weight:2},
+                            {desc:"boit 🥛 (de l'eau)",weight:9},{desc:"boit 🥛🥛 (de l'eau)",weight:5},{desc:"boit 🥛🥛🥛 (de l'eau)",weight:2},];
+
+                const cscFinded = getWeightedRandomItem(csq);
+                const replacedSentence = card.desc.replace(/\[csq\]/g, "<u>"+cscFinded.desc+"</u>");
+                card.desc = resolveRandomChoices(replacedSentence);
+
+            }
+            else if (card.type == 19) // I love carrot
+            {
+                let cardCarrot1;
+                let cardCarrot2;
+                let cardCarrot3;
+                let cardCarrot4;
+                let cardCarrot5;
+                
+                const filteredIndicesCarrot1 = cards
+                    .map((card1, index) => card1.type==19? index : -1)
+                    .filter(index => index !== -1);
+                
+                if (filteredIndicesCarrot1.length >0) {
+                    cardCarrot1 = cards.splice(filteredIndicesCarrot1[Math.floor(Math.random() * filteredIndicesCarrot1.length)], 1)[0];
+                }       
+
+                const filteredIndicesCarrot2 = cards
+                    .map((card1, index) => card1.type==19? index : -1)
+                    .filter(index => index !== -1);
+                
+                if (filteredIndicesCarrot2.length >0) {
+                    cardCarrot2 = cards.splice(filteredIndicesCarrot2[Math.floor(Math.random() * filteredIndicesCarrot2.length)], 1)[0];
+                }       
+
+                const filteredIndicesCarrot3 = cards
+                    .map((card1, index) => card1.type==19? index : -1)
+                    .filter(index => index !== -1);
+                
+                if (filteredIndicesCarrot3.length >0) {
+                    cardCarrot3 = cards.splice(filteredIndicesCarrot3[Math.floor(Math.random() * filteredIndicesCarrot3.length)], 1)[0];
+                }    
+
+                const filteredIndicesCarrot4 = cards
+                    .map((card1, index) => card1.type==19? index : -1)
+                    .filter(index => index !== -1);
+                
+                if (filteredIndicesCarrot2.length >0) {
+                    cardCarrot4 = cards.splice(filteredIndicesCarrot4[Math.floor(Math.random() * filteredIndicesCarrot4.length)], 1)[0];
+                }       
+
+                const filteredIndicesCarrot5 = cards
+                    .map((card1, index) => card1.type==19? index : -1)
+                    .filter(index => index !== -1);
+                
+                if (filteredIndicesCarrot3.length >0) {
+                    cardCarrot5 = cards.splice(filteredIndicesCarrot5[Math.floor(Math.random() * filteredIndicesCarrot5.length)], 1)[0];
+                }   
+
+                let strCardDesc = "";  
+                strCardDesc ="<span class='eye-icon1'>🙈</span><div ><table class='table-carrot'>";
+                    strCardDesc +="<tr><td class='td-num'>1</td><td class='td-carrot-desc'>"+card.desc+"</div></td></tr>";
+                    if(cardCarrot1)
+                        strCardDesc +="<tr><td class='td-num'>2</td><td class='td-carrot-desc'>"+cardCarrot1.desc+"</div></td></tr>";
+                    if(cardCarrot2)
+                        strCardDesc +="<tr><td class='td-num'>3</td><td class='td-carrot-desc'>"+cardCarrot2.desc+"</div></td></tr>";
+                    if(cardCarrot3)
+                        strCardDesc +="<tr><td class='td-num'>4</td><td class='td-carrot-desc'>"+cardCarrot3.desc+"</div></td></tr>";
+                    if(cardCarrot4)
+                        strCardDesc +="<tr><td class='td-num'>5</td><td class='td-carrot-desc'>"+cardCarrot4.desc+"</div></td></tr>";
+                    if(cardCarrot5)
+                        strCardDesc +="<tr><td class='td-num'>6</td><td class='td-carrot-desc'>"+cardCarrot5.desc+"</div></td></tr>";
+                    strCardDesc+="</table></div>";
+
+
+
+                let strCardDescBack = "<span class='eye-icon1'>🙈</span>";  
+                strCardDescBack+="<div style='flex: 1;overflow-y: auto;' ><table class='table-carrot' style='width:100%'>";
+                    
+                card.carrotPlyerChoice = [];
+                for(let ik = 0; ik < players.length; ik++)
+                {
+                    if(ik != currentPlayerIndex)
+                    {
+                        strCardDescBack +="<tr><td class='td-num' style='width:75%;'>"+players[ik].name+" : </td><td class='td-carrot-desc' style='width:15%;'><div class='add-difficulty-mode-button-on' style='text-align: center;' id='carrotChoice"+players[ik].id+"' onclick='updateCarrotChoice("+players[ik].id+")'>OUI</div></div></td></tr>";
+                        card.carrotPlyerChoice.push({id:players[ik].id, isYes : true});
+                    }
+                    
+                }
+                strCardDescBack+="</table></div>";
+
+                card.verso=strCardDescBack;
+
+                card.desc = strCardDesc;
+
+                activateGreenSwipe = true;
+                desactivateSwipte = true;
+            }
+            if (card.type == 16) // ca m'énerve
             {
                 let card2, card3;
                 // j1                
                 card.dataCardExt=[];
 
-                if(filteredIndices.length>0)
+                const filteredIndices2 = cards
+                        .map((card1, index) => card1.type==16 && (!card1.notInclude) ? index : -1)
+                        .filter(index => index !== -1);
+                if(filteredIndices2.length>0)
                 {
-                    const randomIndex2 = filteredIndices[Math.floor(Math.random() * filteredIndices.length)];
-                    filteredIndices.splice(filteredIndices.indexOf(randomIndex2),1);
+                    const randomIndex2 = filteredIndices2[Math.floor(Math.random() * filteredIndices2.length)];
+                    //filteredIndices.splice(filteredIndices2.indexOf(randomIndex2),1);
                     card2 = cards.splice(randomIndex2, 1)[0];
                     card.dataCardExt.push(card2);
                 }
                 
-                if(filteredIndices.length>0)
+                const filteredIndices3 = cards
+                        .map((card1, index) => card1.type==16 && (!card1.notInclude) ? index : -1)
+                        .filter(index => index !== -1);
+                if(filteredIndices3.length>0)
                 {
-                    const randomIndex3 = filteredIndices[Math.floor(Math.random() * filteredIndices.length)];
-                    filteredIndices.splice(filteredIndices.indexOf(randomIndex3),1);
+                    const randomIndex3 = filteredIndices3[Math.floor(Math.random() * filteredIndices3.length)];
+                    //filteredIndices.splice(filteredIndices.indexOf(randomIndex3),1);
                     card3 = cards.splice(randomIndex3, 1)[0];
                     card.dataCardExt.push(card3);
                 }
@@ -1727,7 +2321,121 @@
                 }
                 desactivateSwipte = true;
 
+                
 
+            }
+            else if (card.type == 18) // sent critique
+            {
+                
+                card.desc =getCritiqueTag(card.subType)+card.desc;
+                card.verso = "<span class='eye-icon1'>💡</span>"+card.verso;
+                
+            }
+            else if (card.type == 17) // dilemme
+            {
+               
+
+                let card2Bonus;
+                let card3Bonus;
+                let card1Malus;
+                let card2Malus;
+                let card3Malus;
+                    
+                const filteredIndicesB2 = cards
+                    .map((card1, index) => card1.type==17 && card1.subType == 1 ? index : -1)
+                    .filter(index => index !== -1);
+                
+                if (filteredIndicesB2.length >0) {
+                    card2Bonus = cards.splice(filteredIndicesB2[Math.floor(Math.random() * filteredIndicesB2.length)], 1)[0];
+                }                
+            
+                const filteredIndicesB3 = cards
+                    .map((card1, index) => card1.type==17 && card1.subType == 1 ? index : -1)
+                    .filter(index => index !== -1);
+                
+                if (filteredIndicesB3.length >0) {
+                    card3Bonus = cards.splice(filteredIndicesB3[Math.floor(Math.random() * filteredIndicesB3.length)], 1)[0];
+                }   
+
+                const filteredIndicesM1 = cards
+                    .map((card1, index) => card1.type==17 && card1.subType == 2 ? index : -1)
+                    .filter(index => index !== -1);
+                
+                if (filteredIndicesM1.length >0) {
+                    card1Malus = cards.splice(filteredIndicesM1[Math.floor(Math.random() * filteredIndicesM1.length)], 1)[0];
+                }   
+
+                const filteredIndicesM2 = cards
+                    .map((card1, index) => card1.type==17 && card1.subType == 2 ? index : -1)
+                    .filter(index => index !== -1);
+                
+                if (filteredIndicesM2.length >0) {
+                    card2Malus = cards.splice(filteredIndicesM2[Math.floor(Math.random() * filteredIndicesM2.length)], 1)[0];
+                }   
+
+                const filteredIndicesM3 = cards
+                    .map((card1, index) => card1.type==17 && card1.subType == 2 ? index : -1)
+                    .filter(index => index !== -1);
+                
+                if (filteredIndicesM3.length >0) {
+                    card3Malus = cards.splice(filteredIndicesM3[Math.floor(Math.random() * filteredIndicesM3.length)], 1)[0];
+                }   
+
+
+
+                card.dilemBonus = [];
+                card.dilemMalus = [];
+                card.dilemBonusSelected = -1;
+                card.dilemMalusSelected = -1;
+
+                let strCardDesc = "";  
+                strCardDesc ="<span class='eye-icon1'>🙈</span><div class='table-container-angry'><table>"                
+                +"<tr><td style='background:"+players[currentPlayerIndex].bgColor+"'>"+players[currentPlayerIndex].name+" joue : </td></tr>"
+                +"<tr><td ><div class='proposal-button' id='bonusCard1' style='color:white;padding:10px;' onclick='selectDilem(1,0,)'>"+card.desc+"</div></td></tr>";
+                card.dilemBonus.push(card.desc);
+                if(card2Bonus)
+                {
+                    strCardDesc +="<tr><td ><div class='proposal-button' id='bonusCard2' style='color:white;padding:10px;' onclick='selectDilem(1,1)'>"+card2Bonus.desc+"</div></td></tr>";
+                    card.dilemBonus.push(card2Bonus.desc);
+                }
+                if(card3Bonus)
+                {
+                    strCardDesc +="<tr><td ><div class='proposal-button' id='bonusCard3' style='color:white;padding:10px;' onclick='selectDilem(1,2)'>"+card3Bonus.desc+"</div></td></tr>";
+                    card.dilemBonus.push(card3Bonus.desc);
+                }
+                strCardDesc+="</table></div>";
+
+                const player2 = getRandomPlayersExcept(players[currentPlayerIndex].id);
+                
+                let strCardDescBack = ""; 
+                if(player2)
+                { 
+                    strCardDescBack ="<span class='eye-icon1'>🙈</span><div class='table-container-angry'><table>"                
+                                    +"<tr><td style='background:"+player2.bgColor+"'>"+player2.name+" joue : </td></tr>";
+
+
+                    if(card1Malus)
+                    {
+                        strCardDescBack +="<tr><td ><div class='proposal-button1' id='malusCard1' style='color:white;padding:10px;' onclick='selectDilem(2,0)'>"+card1Malus.desc+"</div></td></tr>";
+                        card.dilemMalus.push(card1Malus.desc);
+                    }
+                    if(card2Malus)
+                    {
+                        strCardDescBack +="<tr><td ><div class='proposal-button1' id='malusCard2' style='color:white;padding:10px;' onclick='selectDilem(2,1)'>"+card2Malus.desc+"</div></td></tr>";
+                        card.dilemMalus.push(card2Malus.desc);
+                    }
+                    if(card3Malus)
+                    {
+                        strCardDescBack +="<tr><td ><div class='proposal-button1' id='malusCard3' style='color:white;padding:10px;' onclick='selectDilem(2,2)'>"+card3Malus.desc+"</div></td></tr>";
+                        card.dilemMalus.push(card3Malus.desc);
+                    }
+                    strCardDescBack+="</table></div>";
+                }
+                card.desc = strCardDesc;
+
+                card.verso = strCardDescBack;
+                desactivateSwipte = true;
+                
 
             }
             else if (card.type == 15) // association limite
@@ -1763,7 +2471,7 @@
                     filteredIndices2.splice(filteredIndices2.indexOf(randomIndex2),1);
                     const card2 = cards.splice(randomIndex2, 1)[0];
 
-                    card.verso += "<tr><td ><div class='proposal-button1' onclick='showresultAssosLimit("+ik+")'>"+card2.desc+"</div></td></tr>";
+                    card.verso += "<tr><td ><div class='proposal-button1' style='padding:10px;color:white;' onclick='showresultAssosLimit("+ik+")'>"+card2.desc+"</div></td></tr>";
                     card.listPropal.push(card2.desc);
                 }
                 card.verso+="</table></div>";
@@ -1807,12 +2515,21 @@
 
                 if (activeMotdice && card.type == 12 && card.subType != 1) {
                     const randomIndex1 = filteredIndices2[Math.floor(Math.random() * filteredIndices2.length)];
-                    filteredIndices2.splice(filteredIndices2.indexOf(randomIndex1),1);
+                    //filteredIndices2.splice(filteredIndices2.indexOf(randomIndex1),1);
                     const card1 = cards.splice(randomIndex1, 1)[0];
                     mot1 = card1.desc;
                 }
-                const randomIndex2 = filteredIndices2[Math.floor(Math.random() * filteredIndices2.length)];
-                filteredIndices2.splice(filteredIndices2.indexOf(randomIndex2),1);
+
+                const filteredIndices3 = cards
+                    .map((c, index) =>
+                        ((c.type == 12 && c.subType == 1)
+                            || (c.type == 14))
+                            ? index : -1)
+                    .filter(index => index !== -1);
+
+
+                const randomIndex2 = filteredIndices3[Math.floor(Math.random() * filteredIndices3.length)];
+                //filteredIndices3.splice(filteredIndices3.indexOf(randomIndex2),1);
                 const card2 = cards.splice(randomIndex2, 1)[0];
                 const mot2 = card2.desc;
 
@@ -1828,7 +2545,7 @@
             }
             else if (card.type == 3) // dilemme
             {
-                const tabRndDilemme = ["Répond au dilemme.", "Défend la première partie du dilemme.", "Défend la deuxième partie du dilemme.",
+                const tabRndDilemme = ["Répond au dilemme.", "Défend la première partie du débat.", "Défend la deuxième partie du dilemme.",
                     "Choisi une partie du dilemme et défend la.", "[playerCurr] doit défendre la première partie et [playerX] doit défendre la segonde partie du dilemme.",
                     "[playerX] doit défendre la première partie et [playerCurr] doit défendre la segonde partie du dilemme."
                 ]
@@ -1856,7 +2573,7 @@
                     subType = 2;
 
                 const filteredIndices2 = cards
-                    .map((card, index) => card.type == 12 && card.subType == subType ? index : -1)
+                    .map((card1, index) => card1.type == 12 && card1.subType == subType ? index : -1)
                     .filter(index => index !== -1);
 
                 if (filteredIndices2.length === 0) {
@@ -1865,20 +2582,22 @@
 
                 // Sélectionner un index au hasard parmi les cartes filtrées
                 const randomIndex2 = filteredIndices2[Math.floor(Math.random() * filteredIndices2.length)];
-                filteredIndices2.splice(filteredIndices2.indexOf(randomIndex2),1);
+                //filteredIndices2.splice(filteredIndices2.indexOf(randomIndex2),1);
                 let card2 = cards.splice(randomIndex2, 1)[0];
 
+                const name= (card.subType == 1?card.desc:card2.desc);
+                const situation= (card.subType == 2?card.desc:card2.desc);
 
 
-                card = { desc: "Devine les personnage / situation au verso</br><span class='eye-icon1'>🙈</span>", verso: "<font color='#3d3a72'>" + card.desc + "</font> <font color='#900C3F'>" + card2.desc + "</font>", type: 12 };
+                card.verso = "<font color='#3d3a72'>" + name + "</font> <font color='#900C3F'>" + situation + "</font>";
+                card.desc = "Devine les personnage / situation au verso</br><span class='eye-icon1'>🙈</span>";
+                
                 currentCardObject = card;
             }
             else if (card.type == 10) //ttdtc
             {
 
-                card = {
-                    desc: `
-
+                card.desc = `
                         <div style="width:100%;height:100%;" id="divTtdtc">
                             <div class="title" id="titleVal" style="height:20%">
                             ${card.theme}
@@ -1912,8 +2631,7 @@
 
                         </div>
                         `
-                    , verso: "", type: 10
-                };
+                card.verso= "";
                 desactivateSwipte = true;
 
             }
@@ -1927,6 +2645,7 @@
                 card.verso += "<span class='eye-icon'>" + filteredspecialTypeActive[0].icon + "</span>";
             }
 
+            currentCardObject = card;
             return card;
         }
 
@@ -1953,8 +2672,8 @@
             const filteredspecialTypeActive = specialType.filter(p => p.id == currentCardObject.type);
             startTimer();
             const cardElement = document.getElementById('current-card');
-            cardElement.style.backgroundColor = currCardBgcol;
-
+            //cardElement.style.backgroundColor = currCardBgcol;
+            //console.log(currentCardObject);
 
             const filteredcurrentCardObject = currentCardObject.questions.filter(p => p.lvl == nb);
             const questFinded = filteredcurrentCardObject[Math.floor(Math.random() * filteredcurrentCardObject.length)];
@@ -1982,11 +2701,6 @@
 
         function replaceRange(text) {
 
-
-            let players = [
-                { id: 1, name: "Joueur 1", score: 0 },
-                { id: 2, name: "Joueur 2", score: 0 }
-            ];
             players[currentPlayerIndex].name;
 
 
@@ -2022,6 +2736,7 @@
 
         // Afficher la carte suivante
         function displayNextCard() {
+            closeModal();
             // init
             isFront = true;
             desactivateSwipte = false;
@@ -2112,7 +2827,23 @@
             // Fonction pour ajuster la taille de police
 
             // Appeler la fonction après que le DOM soit complètement chargé
-            if (card.type == 10) {
+            if (card.type == 21) { // meme post traitement
+
+                //imgcontain
+                //console.log(frontText.getBoundingClientRect().height);
+                /*
+                const imgContain = document.getElementById('imgcontain');
+                if(imgContain)
+                {
+                    imgContain.style.maxHeight = `${frontText.getBoundingClientRect().height * 0.3}px`;
+                }*/
+
+                
+                setTimeout(adjustFontSize, 0, "descTd", 1, 0.2, 0);
+                // Réajuster si la fenêtre est redimensionnée
+                window.addEventListener('resize', adjustFontSize, "titleVal", 1, 0.2, 0);
+            }
+            else if (card.type == 10) {
                 setTimeout(adjustFontSize, 0, "titleVal", 1, 0.2, 0);
                 // Réajuster si la fenêtre est redimensionnée
                 window.addEventListener('resize', adjustFontSize, "titleVal", 1, 0.2, 0);
@@ -2154,7 +2885,7 @@
             let witdthPercentValue = 1;
             let heightPercentValue = 1;
             let widthForceCheckValue = 37;//37
-            let heightForceCheckValue = 35;//35
+            let heightForceCheckValue = 0;//35
             if (witdthPercent)
                 witdthPercentValue = witdthPercent;
             if (heightPercent)
@@ -2199,7 +2930,7 @@
                     fontSize -= 1;
                     //console.log((cardText.scrollWidth+widthForceCheckValue) + " >-- " + (cardWidth * witdthPercentValue))
                     //console.log((cardText.scrollHeight + heightForceCheckValue)+ " ---> " +(cardHeight * heightPercentValue))
-                    //console.log(fontSize)
+                    //console.log(heightForceCheckValue)
                     cardText.style.fontSize = `${fontSize}px`;
                     if((cardText.scrollHeight + heightForceCheckValue) <= (cardHeight * heightPercentValue)
                         && prevscrollWidth == cardText.scrollWidth + widthForceCheckValue)
@@ -2334,7 +3065,7 @@
         function handleSwipe(points) {
             //if(desactivateSwipte) return;
             // Ajouter les points au joueur actuel
-            console.log(multipleScoreAdd);
+            //console.log(multipleScoreAdd);
             if(multipleScoreAdd.length>0)
             {
                 (multipleScoreAdd).forEach(element => {
@@ -2396,8 +3127,10 @@
                     // Ne pas swiper automatiquement
                     const currCard = document.getElementById("current-card");
 
-                    currCard.style.background = "#dc5656";
+                    //currCard.style.background = "#dc5656";
 
+                    const headDiv = document.getElementById("header");
+                    headDiv.style.background = "#dc5656";
                     if(soundModeOn)
                     {
                         audio.play();
@@ -2540,6 +3273,11 @@
         }
         // Supprimer un joueur
         function deletePlayer(id) {
+            if(players.length <= 2)
+            {
+                afficherMessage("Il faut au moins 2 joueurs.");
+                return;
+            }
             const index = players.findIndex(player => player.id === id);
             if (index === -1) return;
 
@@ -2578,10 +3316,19 @@
         addPlayerForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const playerName = addPlayerInput.value;
-            if (playerName.trim()) {
-                addPlayer(playerName);
-                addPlayerInput.value = '';
-                afficherMessage("Ajout d'un nouveau joueur.");
+            if (playerName.trim() && playerName !="") {
+
+                const playerSameName = players.filter(p=>p.name==playerName);
+                if(playerSameName.length == 0)
+                {
+                    addPlayer(playerName);
+                    addPlayerInput.value = '';
+                    afficherMessage("Ajout d'un nouveau joueur.");
+                }
+                else
+                {
+                    afficherMessage("Un joueur avec le même nom existe déjà.");
+                }                
             }
             else { afficherMessage("Nom incorrect."); }
         });
@@ -2596,7 +3343,7 @@
                     const filteredspecialTypeActive = specialType.filter(p => p.id == currentCardObject.type);
                     if (filteredspecialTypeActive.length > 0) {
                         filteredspecialTypeActive[0].timer = inTimer;
-                        console.log(filteredspecialTypeActive[0].timer);
+                        //console.log(filteredspecialTypeActive[0].timer);
                     }
 
                 }
@@ -2611,7 +3358,7 @@
             cardContainer.innerHTML = "";
             init();
             afficherMessage("Rechargement des cartes.");
-            console.log(remainingCards.length);
+            //console.log(remainingCards.length);
         });
         difficultyMode.addEventListener('click', () => {
             difficultyModeOn = !difficultyModeOn;
@@ -2669,7 +3416,11 @@
         {
             startTimer();
             const cardElement = document.getElementById('current-card');
-            cardElement.style.backgroundColor = currCardBgcol;
+            //cardElement.style.backgroundColor = currCardBgcol;
+            
+            const currentPlayer = players[currentPlayerIndex];
+            const headDiv = document.getElementById("header");
+            headDiv.style.background = currentPlayer.bgColor;
         }
 
         resetTimerButton1.addEventListener('click', () => {
@@ -2777,7 +3528,7 @@
                 msg = "Aucun template de jeu appliqué.";
             }
 
-            console.log(specialType);
+            //console.log(specialType);
             afficherMessage(msg);
         }
         function changeCardType() {
@@ -2811,37 +3562,46 @@
 
 
         function activateSpecial(nb, objCheck) {
-            const filteredspecialTypeActive = specialType.filter(p => p.id == nb);
-            if (filteredspecialTypeActive.length > 0) {
-                filteredspecialTypeActive[0].active = objCheck.checked;
-            }
-            /*
-            const filteredspecialType = specialType.filter( p => p.id === nb );
-            if(filteredspecialType.length>0)
+
+
+            if(objCheck.id == 'speTypeAll')
             {
-                filteredspecialType[0].active = objCheck.checked;
+                (specialType).forEach(element => {
+                    
+                    const speTypeCheck = document.getElementById('speType'+element.id);
+                    speTypeCheck.checked = objCheck.checked;
+                    element.active = objCheck.checked;
+                });
             }
-
-            const activeIds = specialType.filter(item => item.active) // Filtrer les éléments où active est false
-                                            .map(item => item.id); // Extraire seulement les ids
-
-
-              //                              console.log(remainingSpecialCards.length+"----ddddd------");
-            if(objCheck.checked)
-            {                
-                remainingSpecialCards = [...remainingSpecialCards,...specialCards.filter(item => item.type===nb)];
-            }
-            else // retrait
+            else
             {
-                remainingSpecialCards = remainingSpecialCards.filter(item => activeIds.includes(item.type));
+                const filteredspecialTypeActive = specialType.filter(p => p.id == nb);
+                if (filteredspecialTypeActive.length > 0) {
+                    filteredspecialTypeActive[0].active = objCheck.checked;
+                }
+                const speTypeAll = document.getElementById('speTypeAll');
+                if(speTypeAll.checked && !objCheck.checked)
+                {
+                    speTypeAll.checked = !speTypeAll.checked;
+                }
+
             }
-            */
+            
         }
         function toggleAccordion() {
             const content = document.querySelector(".accordion-content");
             content.style.display = content.style.display === "block" ? "none" : "block";
         }
 
+        function closeModal()
+        {
+            modal.style.display = "none";
+            modalImg.src = "";
+        }
+        // Fermer le zoom au clic
+        modal.addEventListener("click", () => {
+            closeModal();
+        });
         document.getElementById('flip-button').addEventListener('click', function () {
             const currentCard = document.getElementById('current-card');
             if (!currentCard) return;
@@ -2868,10 +3628,22 @@
                 if (frontText && frontText != null)
                     frontText.style.display = 'flex';
             }
+            
             isFront = !isFront;
-            console.log("----------");
+            
 
-            if(currentCardObject.type == 15 && !isFront)
+            if(currentCardObject.type == 17)
+            {                
+                displayDilem();
+            }
+            else if(currentCardObject.type == 21)
+            {                
+                if(isFront)
+                    disqplayMemeDescAlt();
+                
+                //adjustFontSize(undefined,undefined,0.7);    
+            }
+            else if(currentCardObject.type == 15 && !isFront)
             {                
                 adjustFontSize(undefined,0.9,0.9);
             }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jkft-cache-v1.3';
+const CACHE_NAME = 'jkft-cache-v1.5';
 const urlsToCache = [
   './',
   './index.html',
@@ -18,6 +18,11 @@ const urlsToCache = [
   './carddata14.js',
   './carddata15.js',
   './carddata16.js',
+  './carddata17.js',
+  './carddata18.js',
+  './carddata19.js',
+  './carddata20.js',
+  //'./carddata21.js',
   './alarm.wav'
   // Ajoutez tous vos fichiers JS et autres ressources
 ];
@@ -58,33 +63,45 @@ self.addEventListener('activate', (event) => {
 
 // Interception des requêtes
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    // Stratégie "Cache first, then network"
-    caches.match(event.request)
-      .then((response) => {
-        if (response) {
-          return response; // Si trouvé dans le cache, retourne directement
-        }
-        
-        // Sinon, va chercher sur le réseau
-        return fetch(event.request).then(
-          (networkResponse) => {
-            // Ne pas mettre en cache si la réponse n'est pas valide
-            if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+  // Vérifier si la requête concerne une image
+  if (event.request.url.match(/\.(jpg|jpeg|png|gif|webp|bmp|svg|ico)$/)) {
+    // Pour les images, utiliser le réseau sans mise en cache
+    event.respondWith(
+      fetch(event.request)
+        .catch(() => {
+          // En cas d'échec (hors ligne), essayer de servir depuis le cache si disponible
+          return caches.match(event.request);
+        })
+    );
+  } else {
+    // Pour tout le reste (HTML, JS, CSS, etc.), utiliser la stratégie "Cache first, then network"
+    event.respondWith(
+      caches.match(event.request)
+        .then((response) => {
+          if (response) {
+            return response; // Si trouvé dans le cache, retourne directement
+          }
+          
+          // Sinon, va chercher sur le réseau
+          return fetch(event.request).then(
+            (networkResponse) => {
+              // Ne pas mettre en cache si la réponse n'est pas valide
+              if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+                return networkResponse;
+              }
+              
+              // Clone la réponse car elle ne peut être utilisée qu'une fois
+              const responseToCache = networkResponse.clone();
+              
+              caches.open(CACHE_NAME)
+                .then((cache) => {
+                  cache.put(event.request, responseToCache);
+                });
+                
               return networkResponse;
             }
-            
-            // Clone la réponse car elle ne peut être utilisée qu'une fois
-            const responseToCache = networkResponse.clone();
-            
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-              
-            return networkResponse;
-          }
-        );
-      })
-  );
+          );
+        })
+    );
+  }
 });

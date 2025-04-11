@@ -1342,7 +1342,7 @@
         }
         function iniCredit()
         {
-            document.getElementById("creditDiv").innerText="2025 - Créé par Cube - ~"+cards.length+" cartes - v1.5";
+            document.getElementById("creditDiv").innerText="2025 - Créé par Cube - ~"+cards.length+" cartes - v1.6";
         }
         setTimerInput.value = "";
         iniCredit();
@@ -2006,10 +2006,12 @@
         }            
         function selectMeme(nbDec, currentPlayer)
         {
+            
+            const contentTd = document.getElementById("contentTable"+(isFront?"0":"1"));
             if(currentPlayer==1) // front
             {                           
-                const currCardDiv = document.getElementById('FrontTextId');       
-                if(currCardDiv)              
+                //const currCardDiv = document.getElementById('FrontTextId');       
+                if(contentTd)              
                 {
                     let colorVal = "green";
                     if(currentCardObject.currentIndexSelected != nbDec)
@@ -2017,19 +2019,22 @@
                         colorVal = "red";
                     }
 
-                    const strCardDescTmp1Alt = "<tr><td  style='height:70%; width: 100%;color:"+colorVal+"'>"+currentCardObject.ListDesc[currentCardObject.currentIndexSelected]+"</td></tr>";
-                    currCardDiv.innerHTML = currentCardObject.StrDesc1+strCardDescTmp1Alt+currentCardObject.StrDesc2;
+                    const strCardDescTmp1Alt = "<table class='table-carrot'><tr><td  style='height:70%; width: 100%;color:"+colorVal+"'>"+currentCardObject.ListDesc[currentCardObject.currentIndexSelected]+"</td></tr></table>";
+
+
+
+                    contentTd.innerHTML = strCardDescTmp1Alt;
                     currentCardObject.currentIndexSelectedPlayer = true;
                 }
             }
             else
             {
-                const currCardDiv = document.getElementById('BackTextId');       
-                if(currCardDiv)              
+                //const currCardDiv = document.getElementById('BackTextId');       
+                if(contentTd)              
                 {
                     currentCardObject.currentIndexSelected = nbDec;
-                    const strCardDescTmp1Alt = "<tr><td  style='height:70%; width: 100%;'>"+currentCardObject.ListDesc[nbDec]+"</td></tr>";
-                    currCardDiv.innerHTML = currentCardObject.StrDesc1+strCardDescTmp1Alt+currentCardObject.StrDesc2;
+                    const strCardDescTmp1Alt = "<table class='table-carrot'><tr><td  style='height:70%; width: 100%;'>"+currentCardObject.ListDesc[nbDec]+"</td></tr></table>";
+                    contentTd.innerHTML = strCardDescTmp1Alt;
                 }
             }
 
@@ -2037,14 +2042,16 @@
         
         function disqplayMemeDescAlt()
         {
-            console.log(currentCardObject.currentIndexSelected,currentCardObject.currentIndexSelectedPlayer);
+            //console.log(currentCardObject.currentIndexSelected,currentCardObject.currentIndexSelectedPlayer);
 
             if(currentCardObject.currentIndexSelected!=undefined && currentCardObject.currentIndexSelectedPlayer == undefined)
             {      
-                const currCardDiv = document.getElementById('FrontTextId');       
-                if(currCardDiv)              
+                //const currCardDiv = document.getElementById('FrontTextId');       
+                
+                const contentTd = document.getElementById("contentTable"+(isFront?"0":"1"));
+                if(contentTd)              
                 {
-                    currCardDiv.innerHTML = currentCardObject.descAlt;
+                    contentTd.innerHTML = currentCardObject.descAlt;
                     adjustFontSize();
                 }
             }
@@ -2085,7 +2092,9 @@
             //console.log(activeMotdice, card.type);
             if(card.type == 21) // Meme
             { 
-                let strCardDesc = "<div class='imgContainer'><img src='"+card.img+"'/></div>";
+
+
+                
                 
                 let card1Meme;
                 const filteredIndicesCarrot1 = cards
@@ -2117,20 +2126,17 @@
                 for(let ik=0;ik<2; ik++)
                 {
                     let strCardDescTmp ="";
-                    let classHidded = "";
-                    let clickEvent = "";
+                    let clickEvent = 0;
                     let propodsalButton = "";
 
 
                     
                     if(ik==0)
                     {
-                        classHidded="class='tdHidded' ";
                         clickEvent = 1;
                     }
                     else
                     {
-                        clickEvent = 0;
                         strCardDescTmp +="<span class='eye-icon1'>🙈</span>";
                         propodsalButton="1";
                     }
@@ -2138,35 +2144,43 @@
 
                     
                     strCardDescTmp +="<div ><table class='table-carrot'>";
-                        strCardDescTmp +="<tr><td class='imgContainerTd' id='imgcontain' style='height:30%; width: 100%;'><img src='"+card.img+"' onclick='zoomImage(this)'/></div></td></tr>";
+                        strCardDescTmp +="<tr><td class='imgContainerTd' id='imgcontain"+ik+"' style='height:30%; width: 100%;'></div></td></tr>";
 
-                    let strCardDescTmp1 = "";
+                    let strCardDescTmp1 = "<tr><td id='contentTable"+ik+"'>";
+                        
+                    let strCardDescTmp11="<table class='table-carrot'>";
 
                     if(card1Meme)
-                    strCardDescTmp1 +="<tr><td  style='height:23%; width: 100%;'><div class='proposal-button"+propodsalButton+"' style='color:white;padding:10px;font-weight: normal;' onclick='selectMeme(0,"+clickEvent+")'>"+card1Meme.desc+"</div></td></tr>";
+                        strCardDescTmp11 +="<tr><td  style='height:23%; width: 100%;'><div class='proposal-button"+propodsalButton+"' style='color:white;padding:10px;font-weight: normal;' onclick='selectMeme(0,"+clickEvent+")'>"+card1Meme.desc+"</div></td></tr>";
                     
                     if(card2Meme)
-                        strCardDescTmp1 +="<tr><td  style='height:23%; width: 100%;'><div class='proposal-button"+propodsalButton+"' style='color:white;padding:10px;font-weight: normal;' onclick='selectMeme(1,"+clickEvent+")'>"+card2Meme.desc+"</div></td></tr>";
+                        strCardDescTmp11 +="<tr><td  style='height:23%; width: 100%;'><div class='proposal-button"+propodsalButton+"' style='color:white;padding:10px;font-weight: normal;' onclick='selectMeme(1,"+clickEvent+")'>"+card2Meme.desc+"</div></td></tr>";
 
                     if(card3Meme)
-                        strCardDescTmp1 +="<tr><td style='height:23%; width: 100%;'><div class='proposal-button"+propodsalButton+"' style='color:white;padding:10px;font-weight: normal;' onclick='selectMeme(2,"+clickEvent+")'>"+card3Meme.desc+"</div></td></tr>";
+                        strCardDescTmp11 +="<tr><td style='height:23%; width: 100%;'><div class='proposal-button"+propodsalButton+"' style='color:white;padding:10px;font-weight: normal;' onclick='selectMeme(2,"+clickEvent+")'>"+card3Meme.desc+"</div></td></tr>";
                     
+                    strCardDescTmp11+="</table>";
+                    
+
+                    strCardDescTmp1 +=strCardDescTmp11;
+
+                    strCardDescTmp1 += "</td></tr>";
                     
 
                     let strCardDescTmp2="</table></div>";
 
                     
-                    card.StrDesc1 = strCardDescTmp;
-                    card.StrDesc2 = strCardDescTmp2;
+                    //card.StrDesc1 = strCardDescTmp;
+                    //card.StrDesc2 = strCardDescTmp2;
                     card.ListDesc = [];
                     card.ListDesc.push(card1Meme.desc);
                     card.ListDesc.push(card2Meme.desc);
                     card.ListDesc.push(card3Meme.desc);
                     if(ik==0)
                     {
-                        const strCardDescTmp1Alt = "<tr><td id='descTd' style='height:70%; width: 100%;'>Laisse les autres joueurs choisir une descriptions de ce Meme au verso et revient ensuite ici.</td></tr>";
+                        const strCardDescTmp1Alt = "<tr><td id='contentTable"+ik+"'><table class='table-carrot'><tr><td id='descTd' style='height:70%; width: 100%;'>Laisse les autres joueurs choisir une descriptions de ce Meme au verso et revient ensuite ici.</td></tr></table></td></tr>";
                         card.desc = strCardDescTmp+strCardDescTmp1Alt+strCardDescTmp2;
-                        card.descAlt = strCardDescTmp+strCardDescTmp1+strCardDescTmp2;
+                        card.descAlt = strCardDescTmp11;
                     }
                     else
                     {
@@ -2831,12 +2845,17 @@
 
                 //imgcontain
                 //console.log(frontText.getBoundingClientRect().height);
-                /*
-                const imgContain = document.getElementById('imgcontain');
-                if(imgContain)
+                /**/
+
+                
+                const imgContain = document.getElementById('imgcontain0');
+                const imageDisplay = document.getElementById('imageDisplay0');
+                if(imgContain && currentCardObject.img && !imageDisplay)
                 {
-                    imgContain.style.maxHeight = `${frontText.getBoundingClientRect().height * 0.3}px`;
-                }*/
+                    //imgContain.style.maxHeight = `${frontText.getBoundingClientRect().height * 0.3}px`;
+                    displayImgInContainer(imgContain, currentCardObject.img);
+                }
+
 
                 
                 setTimeout(adjustFontSize, 0, "descTd", 1, 0.2, 0);
@@ -2877,7 +2896,36 @@
             attachCardEvents(cardElement);
             startTimer();
         }
+        function displayImgInContainer(container, imageSrc) {
+            //const container = document.getElementById(containerId);
+            
+            // Crée l'image en mémoire
+            const tempImg = new Image();
+            
+            tempImg.onload = function() {
+                // L'image est complètement chargée, on peut l'insérer
+                container.innerHTML = ""; // vide le container
+                container.appendChild(tempImg);
+            };
 
+            tempImg.onerror = function() {
+                console.error("Erreur de chargement de l'image :", imageSrc);
+                // Tu peux afficher une image de secours ici
+            };
+            tempImg.id="imageDisplay"+(isFront?"0":"1");
+
+            tempImg.style.maxWidth = "100%";
+            tempImg.style.height = "auto";
+            tempImg.style.display = "block"; // Pour éviter les marges indésirables
+            //tempImg.src = imageSrc;
+            
+            tempImg.onclick = function() {
+                zoomImage(tempImg);
+            };
+
+            // Optionnel : pour solution 2 (laisser le temps au navigateur)
+            setTimeout(() => { tempImg.src = imageSrc; }, 50);
+        }
 
 
         function adjustFontSize(forcedivId, witdthPercent, heightPercent, heightForceCheck, widthForceCheck) {
@@ -3637,7 +3685,15 @@
                 displayDilem();
             }
             else if(currentCardObject.type == 21)
-            {                
+            {   
+                const imgContain = document.getElementById('imgcontain'+(isFront?"0":"1"));
+                const imageDisplay = document.getElementById('imageDisplay'+(isFront?"0":"1"));
+                if(imgContain && currentCardObject.img && !imageDisplay)
+                {
+                    //imgContain.style.maxHeight = `${frontText.getBoundingClientRect().height * 0.3}px`;
+                    displayImgInContainer(imgContain, currentCardObject.img);
+                }
+
                 if(isFront)
                     disqplayMemeDescAlt();
                 

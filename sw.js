@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jkft-cache-v1.10';
+const CACHE_NAME = 'jkft-cache-v1.11';
 const urlsToCache = [
   './',
   './index.html',

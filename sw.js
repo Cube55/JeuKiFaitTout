@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jkft-cache-v1.8';
+const CACHE_NAME = 'jkft-cache-v1.9';
 const urlsToCache = [
   './',
   './index.html',
@@ -25,6 +25,7 @@ const urlsToCache = [
   './carddata21.js',
   './carddata22.js',
   './carddata23.js',
+  './carddata24.js',
   //'./carddata21.js',
   './alarm.wav'
   // Ajoutez tous vos fichiers JS et autres ressources

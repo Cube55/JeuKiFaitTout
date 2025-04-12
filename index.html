@@ -976,6 +976,7 @@
     <script src="carddata21.js"></script>
     <script src="carddata22.js"></script>
     <script src="carddata23.js"></script>
+    <script src="carddata24.js"></script>
 </head>
 
 <body>
@@ -1019,7 +1020,7 @@
 
         <form class="add-player-form" id="add-player-form">
             <input type="text" class="add-player-input" id="add-player-input" placeholder="Nom du joueur">
-            <button type="submit" class="add-player-button">Ajouter</button>
+            <button type="submit" class="add-player-button">+</button>
         </form>
 
         <ul class="players-list" id="players-list">
@@ -1059,7 +1060,7 @@
 
         </div>
         </br>
-        <button type="button" class="add-difficulty-mode-button lvl0" id="difficulty-mode-button">Mode difficulté :
+        <button type="button" class="add-difficulty-mode-button lvl0" id="difficulty-mode-button">Mode :
             Off</button>&nbsp;<button type="button" class="add-difficulty-mode-button lvl0" id="sound-mode-button">🔇</button>
         </br>
         </br>
@@ -1134,6 +1135,7 @@
         { id: 21, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
         { id: 22, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
         { id: 23, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
+        { id: 24, timer: 30, nbCardCounter: 30, nbCardCounterRnd: 3 },
         ];
 
 
@@ -1163,6 +1165,7 @@
         { id: 21, typeName: "Now your Meme", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#d3a9a9", icon: "😂", "rules":"Un MEME apparaît, et au verso, les autres joueurs doivent choisir quel serait le meilleur libellé pour ce mème. La carte est ensuite retournée, et le joueur principal doit deviner quel libellé ont choisi les autres joueurs.<br><b>Variante avec plusieurs propositions :</b>Activez le mode secondaire sur les autres appareils pour obtenir davantage de propositions. Chaque joueur en choisit une, puis le joueur principal sélectionne celle qu’il trouve la plus fidèle et la plus drôle.</br><b>Non compatible en PWA</b>" },
         { id: 22, typeName: "Friendzone", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#79d5d9", icon: "🤝", "rules":"Lisez l’énoncé, puis à trois, pointez du doigt la personne qui correspond le mieux à ce qui est dit (vous pouvez vous désigner vous-même).</br>Les joueurs ayant obtenu la majorité des votes remportent chacun un point." },
         { id: 23, typeName: "Message limite", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#e1bbb0", icon: "💬", "rules":"Même règle que Association limite." },
+        { id: 24, typeName: "Kebab quizz", active: true, timer: 30, nbCardCounter: 0, nbCardCounterRnd: 0, nextCardCounter: -1, counter: 0, bgColor: "#9e9cee", icon: "🥙", "rules":"Répond aux questions à choix." },
 
         ];
 
@@ -1196,6 +1199,7 @@
         cards = cards.concat(carddata21);
         cards = cards.concat(carddata22);
         cards = cards.concat(carddata23);
+        cards = cards.concat(carddata24);
 
         //#endregion cards
         //console.log(cards.length);
@@ -1390,7 +1394,7 @@
         }
         function iniCredit()
         {
-            document.getElementById("creditDiv").innerText="2025 - Créé par Cube - ~"+cards.length+" cartes - v1.8";
+            document.getElementById("creditDiv").innerText="2025 - Créé par Cube - ~"+cards.length+" cartes - v1.9";
         }
         setTimerInput.value = "";
         iniCredit();
@@ -1575,7 +1579,7 @@
                         let arrResultShuffled = shuffleArray([...arrResult]);
                         currentCardObject.descAlt= currentCardObject.desc;
                         //console.log(arrResultShuffled)
-                        let strResult = "<span class='eye-icon'>🌶️</span><div  class='table-container'><table>";    
+                        let strResult = "<span class='eye-icon'>"+(currentCardObject.type==15?"🌶️":"💬")+"</span><div  class='table-container'><table>";    
                         strResult +="<tr><td>"+currentCardObject.desc+"</td></tr>";
                         for(let ik = 0;ik<arrResultShuffled.length;ik++)
                         {
@@ -2162,7 +2166,36 @@
             currCardBgcol = filteredspecialTypeActive[0].bgColor;
 
             //console.log(activeMotdice, card.type);
-            if(card.type == 21) // Meme
+            if(card.type == 24) // Kebab kuizz
+            {                         
+                let strCardDescTmp11="<table class='table-carrot' style='height:100%'>";
+                    strCardDescTmp11 +="<tr><td  colspan=2 style='padding-bottom:30px;border-bottom:2px white solid;'>"+card.desc+"</td></tr>";
+
+                strCardDescTmp11 +="<tr><td style='width: 10%;vertical-align: middle;border-bottom:2px white solid;'>1.</td><td style='width: 90%;vertical-align: middle;border-bottom:2px white solid;'>"+card.pa+"</td></tr>";
+            
+                strCardDescTmp11 +="<tr><td style='width: 10%;vertical-align: middle;border-bottom:2px white solid;'>2.</td><td style='width: 90%;vertical-align: middle;border-bottom:2px white solid;'>"+card.pb+"</td></tr>";
+
+                strCardDescTmp11 +="<tr><td style='width: 10%;vertical-align: middle;border-bottom:2px white solid;'>3.</td><td style='width: 90%;vertical-align: middle;border-bottom:2px white solid;'>"+card.pc+"</td></tr>";
+
+                strCardDescTmp11 +="<tr><td style='width: 10%;vertical-align: middle;border-bottom:2px white solid;'>4.</td><td style='width: 90%;vertical-align: middle;border-bottom:2px white solid;'>"+card.pd+"</td></tr>";
+                
+                strCardDescTmp11+="</table>";
+                let strVerso = "";        
+                if(card.verso=="pa")
+                    strVerso = "1. "+card.pa;
+                else if(card.verso=="pb")
+                    strVerso = "2. "+card.pb;
+                else if(card.verso=="pc")
+                    strVerso = "3. "+card.pc;
+                else if(card.verso=="pd")
+                    strVerso = "4. "+card.pd;
+                
+                card.desc = strCardDescTmp11;
+
+                card.verso = "<span class='eye-icon1'>💡</span><div style='text-decoration: underline dotted;'>"+strVerso+"</div>";
+
+            }
+            else if(card.type == 21) // Meme
             { 
 
 
@@ -2368,7 +2401,7 @@
                 activateGreenSwipe = true;
                 desactivateSwipte = true;
             }
-            if (card.type == 16) // ca m'énerve
+            else if (card.type == 16) // ca m'énerve
             {
                 let card2, card3;
                 // j1                
@@ -3542,23 +3575,23 @@
             difficultyModeOn = difficultyModeOn+1;
             //console.log(difficultyModeOn);
             if (difficultyModeOn == 1) {
-                difficultyMode.innerHTML = "Mode difficile : Facile";
+                difficultyMode.innerHTML = "Mode : Facile";
                 difficultyMode.classList.remove('lvl0');
                 difficultyMode.classList.add('lvl1');
             }
             else if (difficultyModeOn == 2) {
-                difficultyMode.innerHTML = "Mode difficile : Normal";
+                difficultyMode.innerHTML = "Mode : Normal";
                 difficultyMode.classList.remove('lvl1');
                 difficultyMode.classList.add('lvl2');
             }
             else if (difficultyModeOn == 3) {
-                difficultyMode.innerHTML = "Mode difficile : Difficile";
+                difficultyMode.innerHTML = "Mode : Difficile";
                 difficultyMode.classList.remove('lvl2');
                 difficultyMode.classList.add('lvl3');
             }
             else {
                 difficultyModeOn = 0;
-                difficultyMode.innerHTML = "Mode difficile : Off";
+                difficultyMode.innerHTML = "Mode : Off";
                 difficultyMode.classList.remove('lvl3');
                 difficultyMode.classList.add('lvl0');
             }

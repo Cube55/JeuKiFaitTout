@@ -1394,7 +1394,7 @@
         }
         function iniCredit()
         {
-            document.getElementById("creditDiv").innerText="2025 - Créé par Cube - ~"+cards.length+" cartes - v1.9";
+            document.getElementById("creditDiv").innerText="2025 - Créé par Cube - ~"+cards.length+" cartes - v1.10";
         }
         setTimerInput.value = "";
         iniCredit();
@@ -2171,25 +2171,26 @@
                 let strCardDescTmp11="<table class='table-carrot' style='height:100%'>";
                     strCardDescTmp11 +="<tr><td  colspan=2 style='padding-bottom:30px;border-bottom:2px white solid;'>"+card.desc+"</td></tr>";
 
-                strCardDescTmp11 +="<tr><td style='width: 10%;vertical-align: middle;border-bottom:2px white solid;'>1.</td><td style='width: 90%;vertical-align: middle;border-bottom:2px white solid;'>"+card.pa+"</td></tr>";
-            
-                strCardDescTmp11 +="<tr><td style='width: 10%;vertical-align: middle;border-bottom:2px white solid;'>2.</td><td style='width: 90%;vertical-align: middle;border-bottom:2px white solid;'>"+card.pb+"</td></tr>";
 
-                strCardDescTmp11 +="<tr><td style='width: 10%;vertical-align: middle;border-bottom:2px white solid;'>3.</td><td style='width: 90%;vertical-align: middle;border-bottom:2px white solid;'>"+card.pc+"</td></tr>";
+                let propalInd = ["pa","pb","pc","pd"];
+                propalInd = shuffleArray(propalInd);
+                //console.log(propalInd);
+                const propal = [];
+                propal["pa"] = card.pa;
+                propal["pb"] = card.pb;
+                propal["pc"] = card.pc;
+                propal["pd"] = card.pd;
 
-                strCardDescTmp11 +="<tr><td style='width: 10%;vertical-align: middle;border-bottom:2px white solid;'>4.</td><td style='width: 90%;vertical-align: middle;border-bottom:2px white solid;'>"+card.pd+"</td></tr>";
-                
+                for(let ik = 0; ik<propalInd.length;ik++)
+                {
+                    strCardDescTmp11 +="<tr><td style='width: 10%;vertical-align: middle;border-bottom:2px white solid;'>"+(ik+1)+".</td><td style='width: 90%;vertical-align: middle;border-bottom:2px white solid;'>"+card[propalInd[ik]]+"</td></tr>";    
+                }
+
                 strCardDescTmp11+="</table>";
-                let strVerso = "";        
-                if(card.verso=="pa")
-                    strVerso = "1. "+card.pa;
-                else if(card.verso=="pb")
-                    strVerso = "2. "+card.pb;
-                else if(card.verso=="pc")
-                    strVerso = "3. "+card.pc;
-                else if(card.verso=="pd")
-                    strVerso = "4. "+card.pd;
+                let strVerso = (propalInd.indexOf(card.verso)+1)+". "+propal[card.verso];     
                 
+                
+
                 card.desc = strCardDescTmp11;
 
                 card.verso = "<span class='eye-icon1'>💡</span><div style='text-decoration: underline dotted;'>"+strVerso+"</div>";

@@ -952,6 +952,71 @@
             /* Ajuste la taille de l'icône */
             cursor: pointer;
         }
+
+
+
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        #autocomplete-list {
+            position: absolute;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-top: none;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        .autocomplete-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        .autocomplete-item:hover {
+            background-color: #f1f1f1;
+        }
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tag {
+            background-color: #f1f1f1;
+            border-radius: 20px;
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+        }
+        .tag-close {
+            margin-left: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #888;
+        }
+        .tag-close:hover {
+            color: #333;
+        }
+        #results {
+            margin-top: 20px;
+        }
+        .result-item {
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
     </style>
     <script src="carddata1.js"></script>
     <script src="carddata2.js"></script>
@@ -1082,7 +1147,13 @@
                     Hauteur max image (px) : <input type="text" class="add-player-input" id="set-image-maxheight-input" style="width:100px;" placeholder="Image height">                    
                     <br>                       
                     <br>
-                    <button type="button" class="add-player-button" id="setDebugButton">Set</button>
+                    <button type="button" class="add-player-button" id="setDebugButton">Set</button>                    
+                    <br>                       
+                    <br>
+                    <textarea  id="txbDebugLoadConfig" style="width: 100%;" rows="3"></textarea >               
+                    <br>                       
+                    <br>
+                    <button type="button" class="add-player-button" id="btnDebugLoadConfig">Load config</button>
                 </div>
             </div>
         </div>
@@ -1210,6 +1281,7 @@
             });
             infosRules.innerHTML +="</br><p>🙈 : Cette icône indique que la carte (ou la carte suivante) ne doit <b>pas</b> être montrée à tout le monde. Seul le joueur indiqué (en haut ou sur la carte) doit la consulter.</br>💡 : Cette icône correspond à la <b>réponse</b>.</br><b>Mode secondaire</b> : Ce mode permet à d'autres appareils de participer aux variantes multijoueurs, comme « Association Limite » ou « Now Your Meme ». L'appareil principal doit avoir le mode secondaire désactivé, tandis que les appareils des autres joueurs doivent l’avoir activé.</br><b>Apparition (intervalle) :</b> Définit le nombre de cartes tirées avant qu’un exemplaire de ce type de carte ne puisse apparaître. Le champ (+/-) indique une marge d’aléa. Exemple : Si Apparition = 10 et (+/-) = 3, alors la carte pourra apparaître entre 7 et 13 tirages.</p></br>";
             setImageLoadTimeInput.value = displayImgTimerMs;
+            extractJson();
         }
 
         function specialTypeHtml() {
@@ -1342,6 +1414,10 @@
 
         let difficultyModeOn = 0;
         let currCardBgcol = "white";
+        
+        let searchTimeout;
+        let currentTags = [];
+        let abortController = null;
         // Éléments DOM
         const cardContainer = document.getElementById('card-container');
         const currentPlayerNameElement = document.getElementById('current-player-name');
@@ -1389,12 +1465,14 @@
         const setImageLoadTimeInput = document.getElementById("set-image-load-time-input");
         const setImageMaxheightInput = document.getElementById("set-image-maxheight-input");
         const setDebugButton = document.getElementById("setDebugButton");
+        const txbDebugLoadConfig = document.getElementById("txbDebugLoadConfig");
+        const btnDebugLoadConfig = document.getElementById("btnDebugLoadConfig");
         function removeHtmlTags(str) {
             return str.replace(/<[^>]*>/g, '');
         }
         function iniCredit()
         {
-            document.getElementById("creditDiv").innerText="2025 - Créé par Cube - ~"+cards.length+" cartes - v1.11";
+            document.getElementById("creditDiv").innerText="2025 - Créé par Cube - ~"+cards.length+" cartes - v1.12";
         }
         setTimerInput.value = "";
         iniCredit();
@@ -2146,9 +2224,56 @@
 
 
             // Filtrer les indices des cartes correspondant à l'un des types donnés
-            const filteredIndices = cards
+            let filteredIndices = [];
+            if(types.indexOf(10) > -1 && currentTags.length>0)
+            {
+                
+                const typeSelected = types[Math.floor(Math.random() * types.length)];
+                if(typeSelected == 10)
+                {
+                    // Normaliser les tags pour la recherche
+                const normalizedTags = currentTags.map(tag => normalizeText(tag));
+
+                // Filtrer les éléments par type ET par tags
+                filteredIndices = cards
+                    .map((item, index) => {
+                        // Vérifier d'abord le type et notInclude
+                        if (item.type !== typeSelected || item.notInclude) {
+                            return -1;
+                        }
+                        
+                        // Ensuite vérifier les tags (si des tags sont présents)
+                        if (normalizedTags.length > 0) {
+                            const normalizedTheme = normalizeText(item.theme);
+                            // Vérifier si au moins un tag correspond au thème
+                            const matchesTag = normalizedTags.some(tag => normalizedTheme.includes(tag));
+                            return matchesTag ? index : -1;
+                        }
+                        
+                        // Si pas de tags, garder cet élément
+                        return index;
+                    })
+                    .filter(index => index !== -1);
+                }
+                else{            
+                    filteredIndices = cards
+                    .map((card1, index) => card1.type == typeSelected && (!card1.notInclude) ? index : -1)
+                    .filter(index => index !== -1);
+                }
+            }
+            else{            
+                filteredIndices = cards
                 .map((card1, index) => types.includes(card1.type) && (!card1.notInclude) ? index : -1)
                 .filter(index => index !== -1);
+            }
+
+                
+
+
+
+
+
+
 
             if (filteredIndices.length === 0) {
                 return null; // Aucune carte ne correspond aux types demandés
@@ -3717,6 +3842,8 @@
                     filteredcurrentCardObject[0].timer = timerValue;
                 }
             }
+            
+            extractJson();
             afficherMessage("Timer mise à jour");
         }
 
@@ -3726,13 +3853,14 @@
             const inputCardCounter = document.getElementById("set-init-input");
             const inputCardCounterRnd = document.getElementById("set-init-inputRnd");
             if (inputCardCounter && inputCardCounterRnd) {
+                //console.log(inputCardCounter.value);
                 let cardCounterValue = parseInt(inputCardCounter.value);
                 let cardCounterRndValue = parseInt(inputCardCounterRnd.value);
 
-                if (!isNaN(cardCounterRndValue)) {
+                if (isNaN(cardCounterRndValue)) {
                     cardCounterRndValue = 0;
                 }
-                if (!isNaN(cardCounterValue)) {
+                if (isNaN(cardCounterValue)) {
                     cardCounterValue = -1; // desactivate
                 }
 
@@ -3740,8 +3868,11 @@
                 if (!isNaN(cardCounterValue)) {
                     filteredcurrentCardObject[0].nbCardCounter = cardCounterValue;
                     filteredcurrentCardObject[0].nbCardCounterRnd = cardCounterRndValue;
+                    
                 }
+                extractJson();
             }
+            
             afficherMessage("Card counter mise à jour");
 
         }
@@ -3804,7 +3935,9 @@
             else {
                 const filteredspecialType = specialType.filter(p => p.id == cardtype.value);
                 if (filteredspecialType.length > 0) {
-                    content.innerHTML = `<div class='panel-title'>
+
+                    let strConfig = 
+                    `<div class='panel-title'>
                     ${filteredspecialType[0].typeName}	
                     </div>
                     <table><tr><td>
@@ -3820,13 +3953,361 @@
                     <input type="text" class="add-special-input" id="set-init-inputRnd" placeholder="+/-" style="width:70px;" value="${filteredspecialType[0].nbCardCounterRnd}">
                     </td><td>
                     <button type="button" id="set-init-button" class="add-player-button"  style="width:100px;" onclick="InitValueCardCounter(${filteredspecialType[0].id})">Init.</button>
-                    </td></tr></table>
+                    </td></tr>
+                    
+                    
+                    </table>
+                    
                     `;
 
+                    if(filteredspecialType[0].id == 10) // TTDTC
+                    {
+                        strConfig += `
+                        <div class="search-container">
+                            <div class="input-group">
+                                <input type="text" id="tag-input" class="add-special-input" placeholder="Thème..." 
+                                        oninput="searchThemes(this.value)" 
+                                        onkeypress="functionPressEnter(event)">
+                                <button id="add-tag-btn" class="add-player-button" onclick="addTag()">+</button>&nbsp;
+                                <button id="empty-tag-btn" class="add-player-button" onclick="initTagsEmpty(false)">x</button> 
+                                <div id="autocomplete-list"></div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="tags-container" id="tags-container" style="max-height: 200px; overflow-y: auto; ">`;
+                            
 
+                        //console.log(currentTags);
+                        currentTags.forEach(elementTags => {   
+                            const eltag = escapeHTML(elementTags);
+                            strConfig += getHtmlTagsLib(eltag);
+                        });
+
+
+                        strConfig += `</div>`;
+                    }
+
+
+
+                    content.innerHTML = strConfig;
+                    /*
+                    if(filteredspecialType[0].id == 10) // TTDTC
+                    {
+                        autoLoadTagsHtml();
+                    }*/
 
                 }
             }
+        }
+
+
+        function escapeHTML(str) {
+            return str.replace(/&/g, "")
+                        .replace(/</g, "")
+                        .replace(/>/g, "")
+                        .replace(/"/g, "")
+                        .replace(/'/g, "");
+            }
+        
+        // Fonction pour normaliser le texte (enlever accents et mettre en minuscule)
+        function normalizeText(text) {
+            if(text)  return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+            else return text;
+        }
+
+        function initTagsEmpty(excludejsonLoad) {
+            currentTags=[];
+            const tagsContainer = document.getElementById('tags-container');
+            if(tagsContainer)
+            {
+                tagsContainer.innerHTML = '';
+            }
+            if(excludejsonLoad)
+            {
+                extractJson();
+            }
+            
+        }
+        function getHtmlTagsLib(tagText)
+        {
+            return `<div class="tag">
+                            <span>${tagText}</span>
+                            <span class="tag-close" onclick="removeTag(this.parentNode, '${tagText}')">×</span>
+                            </div>`;
+        }
+        function autoLoadTagsHtml()
+        {
+            initTagsEmpty(true);
+            currentTags.forEach(elementTags => {   
+                const eltag = escapeHTML(elementTags);
+                addTagHtml(eltag);
+            });
+        }
+        function removeTag(tagElement, tagText)
+        {
+            const tagsContainer = document.getElementById('tags-container');
+            tagsContainer.removeChild(tagElement);
+            currentTags = currentTags.filter(tag => tag !== tagText);
+            extractJson();
+        }
+
+        function addTagHtml(tagText) {
+            
+            const tagsContainer = document.getElementById('tags-container');
+            if(tagsContainer)
+            {
+//                tagsContainer.innerHTML += "<div class='tag' ><span>"+tagText+"</span><span class='tag-close' onclick='removeTag(this.parentNode, '"+tagText+"')'>×</span></div>";
+                tagsContainer.innerHTML += getHtmlTagsLib(tagText);
+
+
+                /*
+            const tagElement = document.createElement('div');
+                tagElement.className = 'tag';
+                tagElement.innerHTML = `
+                    <span>${tagText}</span>
+                    <span class="tag-close">×</span>
+                `;
+                    tagElement.querySelector('.tag-close').addEventListener('click', () =>{ removeTag(tagElement); });
+                    
+                    tagsContainer.appendChild(tagElement);
+                    */
+            }
+        }
+
+        // Ajouter un tag
+        function addTag() {
+            
+            const tagInput = document.getElementById('tag-input');
+            const tagText = escapeHTML(tagInput.value.trim());
+            if (tagText && !currentTags.includes(tagText)) {
+                currentTags.push(tagText);
+                
+                addTagHtml(tagText);
+                extractJson();
+
+                tagInput.value = '';
+                
+                const autocompleteList = document.getElementById('autocomplete-list');
+                autocompleteList.style.display = 'none';
+            }
+        }
+        
+        // Fermer l'autocomplétion quand on clique ailleurs
+        document.addEventListener('click', function(e) {
+            const autocompleteList = document.getElementById('autocomplete-list');
+            const tagInput = document.getElementById('tag-input');
+            if(autocompleteList && tagInput)
+            {
+                if (e.target !== tagInput && e.target !== autocompleteList) {
+                    autocompleteList.style.display = 'none';
+                }
+            }
+        });
+        function functionPressEnter(event) {
+            if (event.key === 'Enter') {
+                addTag();
+            }
+        }
+        // Afficher les résultats de la recherche
+        function displayResults(results) {
+            
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            
+            if (results.length === 0) {
+                resultsDiv.innerHTML = '<p>Aucun résultat trouvé.</p>';
+                return;
+            }
+            
+            results.forEach(item => {
+                const resultElement = document.createElement('div');
+                resultElement.className = 'result-item';
+                
+                const questionsList = item.questions.map(q => 
+                    `<li>Q: ${q.question} <br>R: ${q.reponse} (Niveau ${q.lvl})</li>`
+                ).join('');
+                
+                resultElement.innerHTML = `
+                    <h3>${item.theme}</h3>
+                    <p>Type: ${item.type}</p>
+                    <h4>Questions:</h4>
+                    <ul>${questionsList}</ul>
+                `;
+                
+                resultsDiv.appendChild(resultElement);
+            });
+        }
+
+
+        // Fonction de recherche avec debounce
+        function searchThemes(query) {
+            // Annuler la recherche précédente si elle existe
+            if (abortController) {
+                abortController.abort();
+            }
+
+            // Créer un nouveau AbortController pour cette recherche
+            abortController = new AbortController();
+
+            // Effacer le timeout précédent
+            clearTimeout(searchTimeout);
+
+            // Ne rien faire si la requête est trop courte
+            if (query.length < 2) {
+                
+            const autocompleteList = document.getElementById('autocomplete-list');
+                autocompleteList.style.display = 'none';
+                return;
+            }
+
+            // Ajouter un délai pour éviter trop de recherches pendant la frappe
+            searchTimeout = setTimeout(() => {
+            const normalizedQuery = normalizeText(query);
+                
+                // Filtrer les thèmes qui contiennent la requête
+                const matchingThemes = cards
+                    .filter(c => c.type == 10)
+                    .map(item => item.theme)
+                    .filter(theme => normalizeText(theme).includes(normalizedQuery))
+                    // Enlever les doublons
+                    .filter((theme, index, self) => self.indexOf(theme) === index)
+                    // Limiter à 10 résultats
+                    .slice(0, 10);
+                
+                // Afficher les résultats
+                displayAutocompleteResults(matchingThemes);
+            }, 300); // 300ms de délai
+        }
+        
+        // Afficher les résultats d'autocomplétion
+        function displayAutocompleteResults(themes) {
+            
+            const autocompleteList = document.getElementById('autocomplete-list');
+            autocompleteList.innerHTML = '';
+            
+            if (themes.length === 0) {
+                autocompleteList.style.display = 'none';
+                return;
+            }
+            
+            themes.forEach(theme => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.textContent = theme;
+                
+                item.addEventListener('click', () => {
+                    const tagInput = document.getElementById('tag-input');
+                    tagInput.value = theme;
+                    autocompleteList.style.display = 'none';
+                });
+                
+                autocompleteList.appendChild(item);
+            });
+            
+            autocompleteList.style.display = 'block';
+        }
+
+        /////////////////
+
+
+
+        function loadConfigFromJson() { 
+            try{           
+                const objjson = JSON.parse(txbDebugLoadConfig.value);
+                if(objjson.length != undefined)
+                {
+                    objjson.forEach(element => {                        
+                        //const spcialTypeVal = specialType.filter(p => p.id == element.id);
+
+                        const filteredIndices = specialType
+                                                .map((typeSpe, index) => typeSpe.id == element.id ? index : -1)
+                                                .filter(index => index !== -1);
+                        if(specialType !=-1)
+                        {
+                       
+                            if(element.active != undefined)
+                            {
+                                specialType[filteredIndices].active = (element.active == true?true:false);
+                            }
+                            if(element.timer != undefined)
+                            {
+                                const timerval = parseInt(element.timer);
+                                if(!isNaN(timerval))
+                                {
+                                    specialType[filteredIndices].timer = timerval;
+                                }
+                            }
+                            if(element.nbCardCounter != undefined)
+                            {
+                                const nbCardCounter = parseInt(element.nbCardCounter);
+                                if(!isNaN(nbCardCounter))
+                                {
+                                    specialType[filteredIndices].nbCardCounter = nbCardCounter;
+                                    //console.log(nbCardCounter);
+                                }
+                            }
+                            if(element.nbCardCounterRnd != undefined)
+                            {
+                                const nbCardCounterRnd = parseInt(element.nbCardCounterRnd);
+                                if(!isNaN(nbCardCounterRnd))
+                                {
+                                    specialType[filteredIndices].nbCardCounterRnd = nbCardCounterRnd;
+                                }
+                            }
+                            if(element.tags != undefined)
+                            {
+                                if(element.tags.length>0)
+                                {
+                                    initTagsEmpty(true);
+                                    element.tags.forEach(elementTags => {   
+                                        const eltag = escapeHTML(elementTags);
+                                        currentTags.push(eltag);
+                                        addTagHtml(eltag);
+                                    });
+                                }
+                            }
+                        }
+                    });
+                }
+                else
+                {
+                    afficherMessage("Json invalide.1");
+                }
+
+            }catch(e)
+            {                
+                console.error(e);
+                afficherMessage("Json invalide.2");
+            }
+
+        }
+        
+
+        function extractJson() {
+            
+            const typeJson = [];
+            (specialType).forEach(element => {
+                const elVal = {id:element.id, active:element.active, timer:element.timer, nbCardCounter:element.nbCardCounter, nbCardCounterRnd:element.nbCardCounterRnd}
+
+                if(element.id == 10)
+                {
+                    if(currentTags.length>0)
+                    {
+                        const tagsList = [];
+                        (currentTags).forEach(elValTag => {
+                            tagsList.push(elValTag);
+                        });
+                        if(tagsList.length>0)
+                        {
+                            elVal.tags = tagsList;
+                        }
+                    }
+                }
+
+                typeJson.push(elVal);
+            });
+
+            txbDebugLoadConfig.innerText = JSON.stringify(typeJson);
         }
 
 
@@ -3874,6 +4355,10 @@
         // Fermer le zoom au clic
         modal.addEventListener("click", () => {
             closeModal();
+        });
+        btnDebugLoadConfig.addEventListener("click", () => {
+            loadConfigFromJson();
+            //console.log(specialType);
         });
 
 
